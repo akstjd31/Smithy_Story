@@ -1,0 +1,7 @@
+C:\Users\akstj\Documents\GitHub\Smithy_Story\Smithy_Story\bin\Debug\Smithy_Story.exe.config
+C:\Users\akstj\Documents\GitHub\Smithy_Story\Smithy_Story\bin\Debug\Smithy_Story.exe
+C:\Users\akstj\Documents\GitHub\Smithy_Story\Smithy_Story\bin\Debug\Smithy_Story.pdb
+C:\Users\akstj\Documents\GitHub\Smithy_Story\Smithy_Story\obj\Debug\Smithy_Story.csproj.AssemblyReference.cache
+C:\Users\akstj\Documents\GitHub\Smithy_Story\Smithy_Story\obj\Debug\Smithy_Story.csproj.CoreCompileInputs.cache
+C:\Users\akstj\Documents\GitHub\Smithy_Story\Smithy_Story\obj\Debug\Smithy_Story.exe
+C:\Users\akstj\Documents\GitHub\Smithy_Story\Smithy_Story\obj\Debug\Smithy_Story.pdb

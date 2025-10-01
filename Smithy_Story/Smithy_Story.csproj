@@ -50,6 +50,7 @@
     <Compile Include="Upgrade.cs" />
     <Compile Include="UpgradeManager.cs" />
     <Compile Include="Weapon.cs" />
+    <Compile Include="WeaponManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
