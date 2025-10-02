@@ -22,6 +22,12 @@ namespace Smithy_Story
         {
             if (requestManager != null)
             {
+                Console.WriteLine("============== 현재 받은 의뢰 ===============");
+
+                foreach (Request request in requestManager.GetAllRequests())
+                {
+                    Console.WriteLine(request.ToString());
+                }
             }
         }
     }

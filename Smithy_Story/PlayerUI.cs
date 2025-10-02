@@ -22,7 +22,7 @@ namespace Smithy_Story
         {
             if (player != null)
             {
-                Console.WriteLine($"이름: {player.Name}\t피로도: {player.Fatigue}\t돈: {player.Money}\n");
+                Console.WriteLine(player.ToString());
             }
 
         }

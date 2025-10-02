@@ -94,7 +94,7 @@ namespace Smithy_Story
             Console.WriteLine("- 무기/재료 목록");
             for (int i = 0; i < items.Count; i++)
             {
-                Console.WriteLine($"{i + 1}: {items[i]}");
+                Console.WriteLine(items[i].ToString());
             }
             Console.WriteLine("\n");
         }

@@ -31,8 +31,24 @@ namespace Smithy_Story
         // 생성자
         // 메소드
 
+        // 만료된 의뢰가 있는지?
+        public void CheckExpiredRequests(GameTime gameTime)
+        {
+            foreach (var req in requests)
+            {
+                if (req.IsExpired(gameTime.Day))
+                {
+                    Console.WriteLine($"[만료] 의뢰 '{req.Title}' 의 데드라인이 지났습니다! 해당 의뢰를 제거합니다.");
+                    requests.Remove(req);
+                }
+            }
+        }
+
+        // 현재 수락한 의뢰 목록 확인하기
+        public List<Request> GetAllRequests() => requests;
+
         // 의뢰를 더 받을 수 있는지? + 사용자 답변
-        public void AddRequest(Request request, char answer)
+        public void TryAddRequest(Request request, char answer)
         {
             if (requests.Count >= MaxRequestCount)
             {
@@ -52,7 +68,8 @@ namespace Smithy_Story
             }
         }
 
-        public void CompleteRequest(Request request)
+        // 의뢰 완료 처리 (보상을 받을 플레이어, 완료된 의뢰)
+        public void CompleteRequest(Player player, Request request)
         {
             if (!requests.Contains(request))
             {
@@ -60,6 +77,8 @@ namespace Smithy_Story
                 return;
             }
 
+            // 보상 지급
+            player.Money += CalculateReward(request.Item, request.Type);
             requests.Remove(request);
         }
 
@@ -132,7 +151,7 @@ namespace Smithy_Story
             string title = CreateTitle(item, type);
             int deadline = 3;   // 수정 필요
 
-            return new Request(nextId++, title, reward, deadline, type);
+            return new Request(nextId++, title, item, reward, deadline, type);
         }
     }
 }

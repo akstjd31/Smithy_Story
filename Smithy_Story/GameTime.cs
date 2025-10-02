@@ -66,6 +66,6 @@ namespace Smithy_Story
         public void AddDays(int days) => this.day += days;
 
         // 출력 ?일 ??:??
-        public string GetFormattedTime() => $"Day {day}, {hour:D2}:{minute:D2}";
+        public override string ToString() => $"Day {day}, {hour:D2}:{minute:D2}";
     }
 }

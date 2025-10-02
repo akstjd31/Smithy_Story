@@ -38,7 +38,7 @@ namespace Smithy_Story
         public int Money
         {
             get => money;
-            private set
+            set
             {
                 if (value <= 0) money = 0;
                 else money = value;
@@ -54,9 +54,7 @@ namespace Smithy_Story
         }
 
         // 메소드
-        public override string ToString()
-        {
-            return $"이름: {Name}\t피로도: {Fatigue}\n";
-        }
+
+        public override string ToString() => $"이름: {Name}\t피로도: {Fatigue}\t돈: {Money}";
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Smithy_Story
 {
-    // 의뢰 상태 enum 클래스
+    // 의뢰 상태 enum 클래스 <= 이거 굳이 필요한가...??? 그냥 플레이어가 받은 의뢰만 리스트에 넣고 완료 or 실패하면 리스트에서 제거하면 될듯
     public enum RequestStatus { Pending, Accepted, Completed, Failed }
 
     public class Request
@@ -16,17 +16,19 @@ namespace Smithy_Story
         // 변수
         // 프로퍼티
         public int Id {  get; private set; }
-        public string Name { get; private set; }
+        public string Title { get; private set; }
+        public IItem Item { get; private set; }
         public int Reward { get; private set; }
         public int DeadlineDay { get; private set; }
         public RequestStatus Status { get; set; } = RequestStatus.Pending;  // 의뢰 상태 (의뢰를 받았는지? 아님 거절했는지? 그런거)
         public RequestType Type { get; private set; }                       // 의뢰 종류 (제작, 재료 운반 등..)
 
         // 생성자
-        public Request(int id, string name, int reward, int deadlineDay, RequestType requestType)
+        public Request(int id, string title, IItem item, int reward, int deadlineDay, RequestType requestType)
         {
             Id = id;
-            Name = name;
+            Title = title;
+            Item = item;
             Reward = reward;
             DeadlineDay = deadlineDay;
             Type = requestType;
@@ -35,14 +37,11 @@ namespace Smithy_Story
         // 메소드
         
         // 의뢰 실패 유무 확인
-        public bool IsExpired(GameTime time)
+        public bool IsExpired(int day)
         {
-            return time.Day > DeadlineDay;
+            return day > DeadlineDay;
         }
 
-        public override string ToString()
-        {
-            return $"{Name}의 의뢰:\t(보상: {Reward} 골드, 마감: Day {DeadlineDay}, 상태: {Status})\n";
-        }
+        public override string ToString() =>  $"[{Title}] 의뢰:\t(보상: {Reward} 골드, 마감: Day {DeadlineDay}, 상태: {Status})";
     }
 }

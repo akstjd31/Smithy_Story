@@ -22,6 +22,7 @@ namespace Smithy_Story
         // UI 출력문 작성
         public void Update()
         {
+
         }
     }
 }

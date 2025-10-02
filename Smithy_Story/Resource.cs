@@ -38,9 +38,6 @@ namespace Smithy_Story
         // 메소드
 
         // 출력문 재정의
-        public override string ToString()
-        {
-            return $"[{ID}] {Name}\t(개수: {Quantity}, 가격: {Price}, 등급: {Grade})\n";
-        }
+        public override string ToString() => $"[{ID}] {Name}\t(개수: {Quantity}, 가격: {Price}, 등급: {Grade})\n";
     }
 }
