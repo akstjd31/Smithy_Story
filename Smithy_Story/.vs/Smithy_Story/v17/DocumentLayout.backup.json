@@ -3,32 +3,48 @@
   "WorkspaceRootPath": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\iitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|solutionrelative:iitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\upgrademanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|solutionrelative:upgrademanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\weaponfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|solutionrelative:weaponfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|c:\\users\\akstj\\documents\\github\\smithy_story\\smithy_story\\weaponmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|solutionrelative:weaponmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|c:\\users\\akstj\\documents\\github\\smithy_story\\smithy_story\\resourcedata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|solutionrelative:resourcedata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\gametime.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|solutionrelative:gametime.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\inventory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|solutionrelative:inventory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|c:\\users\\akstj\\documents\\github\\smithy_story\\smithy_story\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|solutionrelative:player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\Player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|solutionrelative:Player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\weapon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|c:\\users\\akstj\\documents\\github\\smithy_story\\smithy_story\\resource.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|solutionrelative:resource.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|c:\\users\\akstj\\documents\\github\\smithy_story\\smithy_story\\weapon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|solutionrelative:weapon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\upgrade.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|solutionrelative:upgrade.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\UpgradeManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|solutionrelative:UpgradeManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|solutionrelative:Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\Upgrade.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|solutionrelative:Upgrade.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\GameTime.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{667FA19A-5DF4-4998-93FF-BD541D0B78D2}|Smithy_Story.csproj|solutionrelative:GameTime.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -38,7 +54,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -46,25 +62,65 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Upgrade.cs",
-              "DocumentMoniker": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\Upgrade.cs",
-              "RelativeDocumentMoniker": "Upgrade.cs",
-              "ToolTip": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\Upgrade.cs",
-              "RelativeToolTip": "Upgrade.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAAACAAAAAOAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "ResourceData.cs",
+              "DocumentMoniker": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\ResourceData.cs",
+              "RelativeDocumentMoniker": "ResourceData.cs",
+              "ToolTip": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\ResourceData.cs",
+              "RelativeToolTip": "ResourceData.cs",
+              "ViewState": "AgIAABcAAAAAAAAAAAAAACMAAAA1AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-01T03:02:41.494Z"
+              "WhenOpened": "2025-10-02T00:50:26.302Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 5,
+              "Title": "Resource.cs",
+              "DocumentMoniker": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\Resource.cs",
+              "RelativeDocumentMoniker": "Resource.cs",
+              "ToolTip": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\Resource.cs",
+              "RelativeToolTip": "Resource.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAADwvxsAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-02T00:48:07.117Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "IItem.cs",
+              "DocumentMoniker": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\IItem.cs",
+              "RelativeDocumentMoniker": "IItem.cs",
+              "ToolTip": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\IItem.cs",
+              "RelativeToolTip": "IItem.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-01T08:39:12.541Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "WeaponFactory.cs",
+              "DocumentMoniker": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\WeaponFactory.cs",
+              "RelativeDocumentMoniker": "WeaponFactory.cs",
+              "ToolTip": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\WeaponFactory.cs",
+              "RelativeToolTip": "WeaponFactory.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAADwvxoAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-01T08:32:27.045Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "Weapon.cs",
               "DocumentMoniker": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\Weapon.cs",
               "RelativeDocumentMoniker": "Weapon.cs",
               "ToolTip": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\Weapon.cs",
               "RelativeToolTip": "Weapon.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAqwBQAAAAcAAAAAAAAAA==",
+              "ViewState": "AgIAADMAAAAAAAAAAAAowEQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-01T02:38:48.844Z",
               "EditorCaption": ""
@@ -77,40 +133,51 @@
               "RelativeDocumentMoniker": "Player.cs",
               "ToolTip": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\Player.cs",
               "RelativeToolTip": "Player.cs",
-              "ViewState": "AgIAABMAAAAAAAAAAAAqwBkAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABkAAAAAAAAAAADwvysAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-01T02:36:30.972Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
+              "Title": "Inventory.cs",
+              "DocumentMoniker": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\Inventory.cs",
+              "RelativeDocumentMoniker": "Inventory.cs",
+              "ToolTip": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\Inventory.cs",
+              "RelativeToolTip": "Inventory.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-01T08:46:56.873Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Upgrade.cs",
+              "DocumentMoniker": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\Upgrade.cs",
+              "RelativeDocumentMoniker": "Upgrade.cs",
+              "ToolTip": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\Upgrade.cs",
+              "RelativeToolTip": "Upgrade.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACAAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-01T03:02:41.494Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAoAAAAAAAAAAADwv1EAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAAADEAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-01T02:36:18.308Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-01T02:36:18.308Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "WeaponManager.cs",
-              "DocumentMoniker": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\WeaponManager.cs",
-              "RelativeDocumentMoniker": "WeaponManager.cs",
-              "ToolTip": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\WeaponManager.cs",
-              "RelativeToolTip": "WeaponManager.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAADwvw0AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-01T06:16:08.757Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 7,
               "Title": "UpgradeManager.cs",
               "DocumentMoniker": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\UpgradeManager.cs",
               "RelativeDocumentMoniker": "UpgradeManager.cs",
@@ -123,7 +190,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 10,
               "Title": "GameTime.cs",
               "DocumentMoniker": "C:\\Users\\akstj\\Documents\\GitHub\\Smithy_Story\\Smithy_Story\\GameTime.cs",
               "RelativeDocumentMoniker": "GameTime.cs",
@@ -131,8 +198,7 @@
               "RelativeToolTip": "GameTime.cs",
               "ViewState": "AgIAABgAAAAAAAAAAADwvxwAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-01T03:32:34.136Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-01T03:32:34.136Z"
             }
           ]
         }

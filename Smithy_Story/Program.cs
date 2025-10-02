@@ -13,7 +13,7 @@ namespace Smithy_Story
         {
             // 초기화 작업
             GameTime game = new GameTime(); // 커스텀으로 설정 가능
-            WeaponManager weaponManager = new WeaponManager();
+            Inventory inven = new Inventory();
             Player player;
             bool isGameOn = true;
             ConsoleKeyInfo inputKeyInfo;
@@ -47,6 +47,8 @@ namespace Smithy_Story
                         player = new Player(Console.ReadLine());
 
                         Console.WriteLine(player.Name + "님 반갑습니다!");
+                        
+
                         break;
 
                     // 게임 설명 버튼 눌렀을 시
