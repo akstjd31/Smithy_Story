@@ -15,19 +15,56 @@ namespace Smithy_Story
         End
     }
 
-    public static class RequestManager
+    public class RequestManager
     {
         // 상수
+        const int MaxRequestCount = 3;      // 최대 받을 수 있는 의뢰는 3개
+
         // 변수
-        private static int nextId = 101;
-        private static Random rand = new Random();
+        private int nextId = 101;
+        private Random rand = new Random();
+
+        private List<Request> requests = new List<Request>();
+        //private int todayRequestCount = 0;  // 하루 받은 의뢰의 총 개수
 
         // 프로퍼티
         // 생성자
         // 메소드
 
+        // 의뢰를 더 받을 수 있는지? + 사용자 답변
+        public void AddRequest(Request request, char answer)
+        {
+            if (requests.Count >= MaxRequestCount)
+            {
+                Console.WriteLine("오늘은 더 이상 의뢰를 받을 수 없습니다!");
+                return;
+            }
+
+            // 사용자의 답변에 따른 의뢰 수락/거절
+            if (answer.Equals('Y'))
+            {
+                request.Status = RequestStatus.Accepted;
+                requests.Add(request);
+            }
+            else
+            {
+                request.Status = RequestStatus.Failed;
+            }
+        }
+
+        public void CompleteRequest(Request request)
+        {
+            if (!requests.Contains(request))
+            {
+                Console.WriteLine("해당 의뢰는 목록에 존재하지 않습니다!");
+                return;
+            }
+
+            requests.Remove(request);
+        }
+
         // 등급별 보상 계산
-        private static int CalculateReward(IItem item, RequestType type)
+        private int CalculateReward(IItem item, RequestType type)
         {
             int baseReward = 50;     // 의뢰 종류에 따른 기본 보상
             switch (type)
@@ -52,7 +89,7 @@ namespace Smithy_Story
         }
 
         // 타이틀 생성
-        private static string CreateTitle(IItem item, RequestType type)
+        private string CreateTitle(IItem item, RequestType type)
         {
             switch (type)
             {
@@ -68,10 +105,10 @@ namespace Smithy_Story
         }
 
         // 의뢰 종류 하나 뽑기
-        public static int RandomRequestType() => rand.Next((int) RequestType.Start + 1, (int) RequestType.End);
+        public int RandomRequestType() => rand.Next((int) RequestType.Start + 1, (int) RequestType.End);
         
         // 만들어진 모든 데이터를 갖다가 의뢰 하나를 생성하기.
-        public static Request CreateItemRequest()
+        public Request CreateItemRequest()
         {
             // 무기, 재료 모두 합치기
             var items = new List<IItem>();

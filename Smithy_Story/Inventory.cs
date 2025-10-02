@@ -91,13 +91,12 @@ namespace Smithy_Story
                 Console.WriteLine("대장간에는 아무것도 없습니다!");
             }
 
-            Console.WriteLine("================= 대장간 =================");
-            Console.WriteLine("- 무기/재료 목록 -");
+            Console.WriteLine("- 무기/재료 목록");
             for (int i = 0; i < items.Count; i++)
             {
                 Console.WriteLine($"{i + 1}: {items[i]}");
             }
-            Console.WriteLine();
+            Console.WriteLine("\n");
         }
     }
 }

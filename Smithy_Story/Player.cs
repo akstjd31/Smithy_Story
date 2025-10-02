@@ -54,6 +54,9 @@ namespace Smithy_Story
         }
 
         // 메소드
-
+        public override string ToString()
+        {
+            return $"이름: {Name}\t피로도: {Fatigue}\n";
+        }
     }
 }

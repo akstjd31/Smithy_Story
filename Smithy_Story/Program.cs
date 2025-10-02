@@ -5,16 +5,17 @@ namespace Smithy_Story
 {
     internal class Program
     {
-        static GameTime gameTime = new GameTime(); // 커스텀으로 설정 가능, 기본 (day: 0, hour: 8, min: 0)
 
         static void Main(string[] args)
         {
             // 초기화 작업
-            Inventory inventory = new Inventory();
-            Player player;
-            bool isGameOn = true;
-            bool gameOver = false;
-            ConsoleKeyInfo inputKeyInfo;
+            Inventory inventory = new Inventory();  // 인벤토리
+            GameTime gameTime = new GameTime();     // 커스텀으로 설정 가능, 기본 (day: 0, hour: 8, min: 0)
+            UIManager uiManager;                    // 인 게임 UI
+            Player player;                          // 플레이어
+            bool isGameOn = true;                   // 게임이 작동중인지?
+            bool gameOver = false;                  // 게임 오버 상태인지?
+            ConsoleKeyInfo inputKeyInfo;            // 키 정보
 
             // 메인 화면 부분
             string[] menu = new string[]
@@ -36,24 +37,33 @@ namespace Smithy_Story
 
                 switch (inputKeyInfo.Key)
                 {
-                    // 게임 시작 버튼 눌렀을 시
+                    // 게임 시작
                     case ConsoleKey.D1:
                     case ConsoleKey.NumPad1:
                         Console.Clear();
                         Console.WriteLine("플레이어 정보를 입력해주세요!");
                         Console.Write("플레이어 이름: ");
                         player = new Player(Console.ReadLine());
+                        uiManager = new UIManager(player, inventory, gameTime);
 
                         Console.WriteLine(player.Name + "님 반갑습니다!");
 
-                        ConsoleKeyInfo info;
-                        while (true)
+                        // 본격적인 게임 시작
+                        while (!gameOver)
                         {
-                            info = Console.ReadKey(true);
-                            if (info.Key == ConsoleKey.Z)
-                                Console.WriteLine(RequestManager.CreateItemRequest().ToString());
+                            if (uiManager != null)
+                                GameStart(uiManager);
+                            else
+                                Console.WriteLine("오류 발생!!");
                         }
-                        
+
+                        //while (true)
+                        //{
+                        //info = Console.ReadKey(true);
+                        //if (info.Key == ConsoleKey.Z)
+                        //    Console.WriteLine(RequestManager.CreateItemRequest().ToString());
+                        //}
+
                         // 인벤토리 테스트
                         //foreach (var item in ResourceData.GetAll())
                         //    inventory.AddItem(item);
@@ -65,12 +75,6 @@ namespace Smithy_Story
                         //inventory.RemoveItemById(1001);
                         //inventory.RemoveItemById(1001);
                         //inventory.ShowInventory();
-
-                        // 본격적인 게임 시작
-                        //while (!gameOver)
-                        //{
-                        //    GameStart();
-                        //}
 
                         break;
 
@@ -96,10 +100,11 @@ namespace Smithy_Story
             }
         }
 
-        static void GameStart()
+        static void GameStart(UIManager uiManager)
         {
             Console.Clear();
-            Console.WriteLine("게임 시간: " + gameTime.GetFormattedTime());
+            uiManager.UpdateAll();
+
         }
 
         // 메인 화면 출력문
