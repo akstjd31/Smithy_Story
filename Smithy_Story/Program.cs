@@ -13,7 +13,7 @@ namespace Smithy_Story
         {
             // 초기화 작업
             GameTime game = new GameTime(); // 커스텀으로 설정 가능
-            Inventory inven = new Inventory();
+            Inventory inventory = new Inventory();
             Player player;
             bool isGameOn = true;
             ConsoleKeyInfo inputKeyInfo;
@@ -47,7 +47,18 @@ namespace Smithy_Story
                         player = new Player(Console.ReadLine());
 
                         Console.WriteLine(player.Name + "님 반갑습니다!");
+
+                        // 인벤토리 테스트
+                        foreach (var item in ResourceData.GetAllResources())
+                            inventory.AddItem(item);
+
+                        inventory.AddItem(new Resource(1001, "돌", 1, Grade.Common));
+                        inventory.ShowInventory();
+
                         
+                        inventory.RemoveItemById(1001);
+                        inventory.RemoveItemById(1001);
+                        inventory.ShowInventory();
 
                         break;
 

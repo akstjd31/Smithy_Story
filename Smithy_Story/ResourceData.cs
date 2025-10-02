@@ -51,5 +51,11 @@ namespace Smithy_Story
 
             throw new ArgumentException($"재료 {name}은(는) ResourceData에 존재하지 않습니다.");
         }
+
+        // 모든 자원 정보 확인하기
+        public static IEnumerable<Resource> GetAllResources()
+        {
+            return resourcesById.Values;
+        }
     }
 }

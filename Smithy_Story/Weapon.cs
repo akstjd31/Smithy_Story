@@ -28,31 +28,35 @@ namespace Smithy_Story
                 else enhanceLevel = value;
             }
         }
-        
-        public int Price
+
+        public int Price { get; set; }
+
+        public int Quantity
         {
-            get => Price;
-            private set
-            {
-                if (value <= 0) Price = 0;
-                else Price = value;
-            }
+            get; set;
         }
-        
-        public Grade Grade { get; private set; }
 
         public int CraftMinutes
         {
             get => craftMinutes;
             private set { }
         }
+
+        // 무기는 스택 불가 (개수 항상 1)
+        public bool IsStackable => false;
+        public Grade Grade { get; private set; }
+
+
+
         // 생성자
-        public Weapon(int id, string name, int price, Grade grade, int craftMinutes, int enhanceLevel = 0)
+        // 무기는 무조건 개수 1 고정!!!!!!!!
+        public Weapon(int id, string name, int price, Grade grade, int craftMinutes, int quantity = 1, int enhanceLevel = 0)
         {
             ID = id;
             Name = name;
             Price = price;
             Grade = grade;
+            Quantity = quantity;
             this.craftMinutes = craftMinutes;
             this.enhanceLevel = enhanceLevel;
         }
@@ -62,7 +66,7 @@ namespace Smithy_Story
         // 출력문 재정의
         public override string ToString()
         {
-            return $"[{ID}] {Name}\t{enhanceLevel}강\t(등급: {Grade}, 가격: {Price}\n";
+            return $"[{ID}] {enhanceLevel}강 {Name}\t(등급: {Grade}, 가격: {Price})\n";
         }
     }
 }
