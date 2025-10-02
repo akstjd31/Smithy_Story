@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Smithy_Story
 {
     internal class Program
     {
+        static GameTime gameTime = new GameTime(); // 커스텀으로 설정 가능, 기본 (day: 0, hour: 8, min: 0)
+
         static void Main(string[] args)
         {
             // 초기화 작업
-            GameTime game = new GameTime(); // 커스텀으로 설정 가능
             Inventory inventory = new Inventory();
             Player player;
             bool isGameOn = true;
+            bool gameOver = false;
             ConsoleKeyInfo inputKeyInfo;
 
             // 메인 화면 부분
@@ -48,17 +46,31 @@ namespace Smithy_Story
 
                         Console.WriteLine(player.Name + "님 반갑습니다!");
 
-                        // 인벤토리 테스트
-                        foreach (var item in ResourceData.GetAllResources())
-                            inventory.AddItem(item);
-
-                        inventory.AddItem(new Resource(1001, "돌", 1, Grade.Common));
-                        inventory.ShowInventory();
-
+                        ConsoleKeyInfo info;
+                        while (true)
+                        {
+                            info = Console.ReadKey(true);
+                            if (info.Key == ConsoleKey.Z)
+                                Console.WriteLine(RequestManager.CreateItemRequest().ToString());
+                        }
                         
-                        inventory.RemoveItemById(1001);
-                        inventory.RemoveItemById(1001);
-                        inventory.ShowInventory();
+                        // 인벤토리 테스트
+                        //foreach (var item in ResourceData.GetAll())
+                        //    inventory.AddItem(item);
+
+                        //inventory.AddItem(new Resource(1001, "돌", 1, Grade.Common));
+                        //inventory.ShowInventory();
+
+
+                        //inventory.RemoveItemById(1001);
+                        //inventory.RemoveItemById(1001);
+                        //inventory.ShowInventory();
+
+                        // 본격적인 게임 시작
+                        //while (!gameOver)
+                        //{
+                        //    GameStart();
+                        //}
 
                         break;
 
@@ -82,6 +94,12 @@ namespace Smithy_Story
                 }
 
             }
+        }
+
+        static void GameStart()
+        {
+            Console.Clear();
+            Console.WriteLine("게임 시간: " + gameTime.GetFormattedTime());
         }
 
         // 메인 화면 출력문

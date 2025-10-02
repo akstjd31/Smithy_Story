@@ -35,6 +35,16 @@ namespace Smithy_Story
             }
         }
 
+        public int Money
+        {
+            get => money;
+            private set
+            {
+                if (value <= 0) money = 0;
+                else money = value;
+            }
+        }
+
         // 생성자
         public Player(string name, int fatigue = 0, int money = 0)
         {
