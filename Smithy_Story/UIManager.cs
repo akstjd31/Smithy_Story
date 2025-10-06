@@ -18,7 +18,7 @@ namespace Smithy_Story
         // UI 클래스
         private PlayerUI playerUI;
         private TimeUI timeUI;
-        private RequestUI requestUI;
+        private RequestUI dailyRequestUI;
         private InventoryUI inventoryUI;
 
         // 생성자
@@ -32,13 +32,13 @@ namespace Smithy_Story
             playerUI = new PlayerUI(player);
             timeUI = new TimeUI(gameTime);
             inventoryUI = new InventoryUI(inventory);
-            requestUI = new RequestUI(requestManager);
+            dailyRequestUI = new RequestUI(requestManager);
         }
 
         // 의뢰 목록 출력
-        public void UpdateRequestUI()
+        public void UpdateDailyRequestUI()
         {
-            requestUI.Update();
+            dailyRequestUI.Update();
         }
 
         // 인벤토리 출력

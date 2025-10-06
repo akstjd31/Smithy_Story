@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Smithy_Story
@@ -6,12 +7,13 @@ namespace Smithy_Story
     // 화면 FSM
     public enum GameScreen
     { 
-        MainMenu, Explanation, Inventory, InGame, Exit
+        MainMenu, Explanation, RequestMenu, ArchiveRequestMenu, InventoryMenu, InGame, Exit
     }
 
     internal class Program
     {
-        static ConsoleKeyInfo inputKeyInfo;                            // 키 정보
+        static ConsoleKeyInfo inputKeyInfo;                         // 키 정보
+        const int MaxDailyRequestCount = 10;                        // 일일 최대 의뢰 목록 개수 제한
 
         static void Main(string[] args)
         {
@@ -22,14 +24,15 @@ namespace Smithy_Story
             RequestManager requestManager = new RequestManager();   // 의뢰 관리자
             UIManager uiManager = null;                             // 인 게임 UI
             Player player = null;                                   // 플레이어
-            //bool isGameOn = true;                                   // 게임이 작동중인지?
-            //bool gameOver = false;                                  // 게임 오버 상태인지?
 
             Console.WriteLine("플레이어 정보를 입력해주세요!");
             Console.Write("플레이어 이름: ");
             player = new Player(Console.ReadLine());
             Console.WriteLine(player.Name + "님 반갑습니다!");
             uiManager = new UIManager(player, inventory, gameTime, requestManager);
+
+            // 미리 의뢰 만들어놓기
+            requestManager.GenerateDailyRequests(MaxDailyRequestCount);
 
             while (currentScreen != GameScreen.Exit)
             {
@@ -48,8 +51,12 @@ namespace Smithy_Story
                         currentScreen = ShowInGame(currentScreen, player, inventory, requestManager, gameTime, uiManager);
                         break;
 
+                    // 일일 의뢰 목록 보기
+                    case GameScreen.RequestMenu:
+                        currentScreen = ShowDailyRequestList(uiManager);
+                        break;
                     // 인벤토리 보기
-                    case GameScreen.Inventory:
+                    case GameScreen.InventoryMenu:
                         currentScreen = ShowInventory(uiManager);
                         break;
                     
@@ -89,6 +96,22 @@ namespace Smithy_Story
             }
         }
 
+        public static GameScreen ShowDailyRequestList(UIManager uiManager)
+        {
+            bool open = true;
+            while (open)
+            {
+                Console.Clear();
+                uiManager.UpdateDailyRequestUI();
+                Console.Write("뒤로 가려면 0번 키 입력: ");
+                var input = Console.ReadKey(true);
+
+                if (input.Key == ConsoleKey.D0 || input.Key == ConsoleKey.NumPad0)
+                    return GameScreen.InGame;
+            }
+            return GameScreen.InGame;
+        }
+
         // 게임 설명 관련
         public static GameScreen ShowExplanation()
         {
@@ -98,7 +121,7 @@ namespace Smithy_Story
             while (open)
             {
                 // 설명 글 출력
-                Console.WriteLine("뒤로 가려면 0번 키 입력");
+                Console.Write("뒤로 가려면 0번 키 입력: ");
                 var input = Console.ReadKey(true);
 
                 if (input.Key == ConsoleKey.D0 || input.Key == ConsoleKey.NumPad0)
@@ -107,6 +130,7 @@ namespace Smithy_Story
 
             return GameScreen.MainMenu;
         }
+        
 
         // 인벤토리 목록 보기
         public static GameScreen ShowInventory(UIManager uiManager)
@@ -117,7 +141,7 @@ namespace Smithy_Story
             {
                 Console.Clear();
                 uiManager.UpdateInventoryUI();
-                Console.WriteLine("뒤로 가려면 0번 키 입력");
+                Console.Write("뒤로 가려면 0번 키 입력: ");
                 var input = Console.ReadKey(true);
 
                 if (input.Key == ConsoleKey.D0 || input.Key == ConsoleKey.NumPad0)
@@ -128,13 +152,14 @@ namespace Smithy_Story
         }
 
         // 인 게임 출력
-        public static GameScreen ShowInGame(GameScreen currentScreen, Player player, Inventory inventory, RequestManager req, GameTime gameTime, UIManager uiManager)
+        public static GameScreen ShowInGame(GameScreen currentScreen, Player player, Inventory inventory, RequestManager reqManager, GameTime gameTime, UIManager uiManager)
         {
-            string menu = "=============================================" +
-                          "1. 의뢰 확인하기" +
-                          "2. 인벤토리 보기" +
-                          "3. 오늘의 상점 이용하기" +
-                          "4. 잠자기";
+            string menu = "=============================================\n" +
+                          "1. 오늘의 의뢰 확인하기\n" +
+                          "2. 내가 수락한 의뢰 목록 확인하기\n" +
+                          "3. 인벤토리 보기\n" +
+                          "4. 오늘의 상점 이용하기\n" +
+                          "5. 잠자기\n";
                             
             while (currentScreen == GameScreen.InGame)
             {
@@ -142,27 +167,20 @@ namespace Smithy_Story
                 uiManager.UpdatePlayerUI();
                 uiManager.UpdateTimeUI();
 
-                Console.WriteLine();
-                Console.WriteLine("1. 인벤토리 보기");
-                Console.WriteLine("2. 의뢰 확인하기");
-                Console.WriteLine("3. 하루 보내기");
-                Console.WriteLine("4. 메인 메뉴로 돌아가기");
+                Console.WriteLine(menu);
 
                 Console.Write("입력: ");
                 ConsoleKeyInfo input = Console.ReadKey(true);
                 switch (input.Key)
                 {
                     case ConsoleKey.D1:
-                        return GameScreen.Inventory;
-                        //uiManager.ShowInventory();
+                        return GameScreen.RequestMenu;
+                    //uiManager.ShowInventory();
                     case ConsoleKey.D2:
-                        Console.WriteLine("2번키 입력!");
+                        return GameScreen.ArchiveRequestMenu;
                         //uiManager.ShowRequests();
-                        break;
                     case ConsoleKey.D3:
-                        Console.WriteLine("3번키 입력!");
-                        //uiManager.AdvanceDay();
-                        break;
+                        return GameScreen.InventoryMenu;
                     //case ConsoleKey.D4:
                     //    Console.WriteLine("4번키 입력!");
                     //    return GameScreen.MainMenu;
@@ -196,7 +214,7 @@ namespace Smithy_Story
                 WriteCentered(line);
 
             Console.Write("해당되는 번호를 입력하세요: ");
-            inputKeyInfo = Console.ReadKey(false);
+            inputKeyInfo = Console.ReadKey(true);
 
             switch (inputKeyInfo.Key)
             {

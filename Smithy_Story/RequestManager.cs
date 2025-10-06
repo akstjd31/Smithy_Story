@@ -15,24 +15,41 @@ namespace Smithy_Story
         End
     }
 
+    // 단순히 의뢰 보상 계산, 데이터 생성만 함.
     public class RequestManager
     {
         // 상수
-        const int MaxRequestCount = 3;      // 최대 받을 수 있는 의뢰는 3개
 
         // 변수
         private int nextId = 101;
+        private List<Request> dailyRequests = new List<Request>();
         private Random rand = new Random();
-
-        private List<Request> requests = new List<Request>();
-        //private int todayRequestCount = 0;  // 하루 받은 의뢰의 총 개수
 
         // 프로퍼티
         // 생성자
         // 메소드
 
+        // 일일 의뢰 목록 생성하기
+        public void GenerateDailyRequests(int count)
+        {
+            dailyRequests.Clear();
+
+            for (int i = 0; i < count; i++)
+            {
+                Request newRequest = CreateRandomRequest();
+                dailyRequests.Add(newRequest);
+            }
+        }
+
+        // 의뢰 목록 전부 보기
+
+        public List<Request> GetDailyRequests()
+        {
+            return dailyRequests;
+        }
+
         // 만료된 의뢰가 있는지?
-        public void CheckExpiredRequests(GameTime gameTime)
+        public void CheckExpiredRequests(List<Request> requests, GameTime gameTime)
         {
             foreach (var req in requests)
             {
@@ -42,44 +59,6 @@ namespace Smithy_Story
                     requests.Remove(req);
                 }
             }
-        }
-
-        // 현재 수락한 의뢰 목록 확인하기
-        public List<Request> GetAllRequests() => requests;
-
-        // 의뢰를 더 받을 수 있는지? + 사용자 답변
-        public void TryAddRequest(Request request, char answer)
-        {
-            if (requests.Count >= MaxRequestCount)
-            {
-                Console.WriteLine("오늘은 더 이상 의뢰를 받을 수 없습니다!");
-                return;
-            }
-
-            // 사용자의 답변에 따른 의뢰 수락/거절
-            if (answer.Equals('Y'))
-            {
-                request.Status = RequestStatus.Accepted;
-                requests.Add(request);
-            }
-            else
-            {
-                request.Status = RequestStatus.Failed;
-            }
-        }
-
-        // 의뢰 완료 처리 (보상을 받을 플레이어, 완료된 의뢰)
-        public void CompleteRequest(Player player, Request request)
-        {
-            if (!requests.Contains(request))
-            {
-                Console.WriteLine("해당 의뢰는 목록에 존재하지 않습니다!");
-                return;
-            }
-
-            // 보상 지급
-            player.Money += CalculateReward(request.Item, request.Type);
-            requests.Remove(request);
         }
 
         // 등급별 보상 계산
@@ -127,7 +106,7 @@ namespace Smithy_Story
         public int RandomRequestType() => rand.Next((int) RequestType.Start + 1, (int) RequestType.End);
         
         // 만들어진 모든 데이터를 갖다가 의뢰 하나를 생성하기.
-        public Request CreateItemRequest()
+        private Request CreateRandomRequest()
         {
             // 무기, 재료 모두 합치기
             var items = new List<IItem>();

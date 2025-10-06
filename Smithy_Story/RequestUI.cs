@@ -22,12 +22,12 @@ namespace Smithy_Story
         {
             if (requestManager != null)
             {
-                Console.WriteLine("============== 현재 받은 의뢰 ===============");
+                Console.WriteLine("============== 일일 의뢰 목록 ===============");
 
-                foreach (Request request in requestManager.GetAllRequests())
-                {
+                foreach (Request request in requestManager.GetDailyRequests())
                     Console.WriteLine(request.ToString());
-                }
+                
+                Console.WriteLine("=============================================");
             }
         }
     }
