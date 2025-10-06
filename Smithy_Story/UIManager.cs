@@ -35,13 +35,32 @@ namespace Smithy_Story
             requestUI = new RequestUI(requestManager);
         }
 
-        // 전체 출력
-        public void UpdateAll()
+        // 의뢰 목록 출력
+        public void UpdateRequestUI()
         {
-            playerUI.Update();
-            timeUI.Update();
-            inventoryUI.Update();
             requestUI.Update();
         }
+
+        // 인벤토리 출력
+
+        public void UpdateInventoryUI()
+        {
+            inventoryUI.Update();
+        }
+
+        // 플레이어 정보(이름, 피로도) 출력
+
+        public void UpdatePlayerUI()
+        {
+            playerUI.Update();
+        }
+
+        // 게임 시간 출력
+
+        public void UpdateTimeUI()
+        {
+            timeUI.Update();
+        }
+
     }
 }

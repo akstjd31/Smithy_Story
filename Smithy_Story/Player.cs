@@ -15,6 +15,8 @@ namespace Smithy_Story
         private string name;
         private int fatigue;        // 피로도
         private int money;          // 자산
+        
+        //private List<Request> archiveRequests
 
         // 프로퍼티
         public string Name
@@ -55,6 +57,6 @@ namespace Smithy_Story
 
         // 메소드
 
-        public override string ToString() => $"이름: {Name}\t피로도: {Fatigue}\t돈: {Money}";
+        public override string ToString() => $"이름: {Name}\t피로도: {Fatigue}/{MaxFatigue}\t돈: {Money}";
     }
 }

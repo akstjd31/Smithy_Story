@@ -3,60 +3,70 @@ using System.Threading;
 
 namespace Smithy_Story
 {
+    // 화면 FSM
+    public enum GameScreen
+    { 
+        MainMenu, Explanation, Inventory, InGame, Exit
+    }
+
     internal class Program
     {
+        static ConsoleKeyInfo inputKeyInfo;                            // 키 정보
 
         static void Main(string[] args)
         {
             // 초기화 작업
-            Inventory inventory = new Inventory();  // 인벤토리
-            GameTime gameTime = new GameTime();     // 커스텀으로 설정 가능, 기본 (day: 0, hour: 8, min: 0)
-            UIManager uiManager;                    // 인 게임 UI
-            Player player;                          // 플레이어
-            bool isGameOn = true;                   // 게임이 작동중인지?
-            bool gameOver = false;                  // 게임 오버 상태인지?
-            ConsoleKeyInfo inputKeyInfo;            // 키 정보
+            GameScreen currentScreen = GameScreen.MainMenu;         // 시작하면 메인화면
+            Inventory inventory = new Inventory();                  // 인벤토리
+            GameTime gameTime = new GameTime();                     // 커스텀으로 설정 가능, 기본 (day: 0, hour: 8, min: 0)
+            RequestManager requestManager = new RequestManager();   // 의뢰 관리자
+            UIManager uiManager = null;                             // 인 게임 UI
+            Player player = null;                                   // 플레이어
+            //bool isGameOn = true;                                   // 게임이 작동중인지?
+            //bool gameOver = false;                                  // 게임 오버 상태인지?
 
-            // 메인 화면 부분
-            string[] menu = new string[]
+            Console.WriteLine("플레이어 정보를 입력해주세요!");
+            Console.Write("플레이어 이름: ");
+            player = new Player(Console.ReadLine());
+            Console.WriteLine(player.Name + "님 반갑습니다!");
+            uiManager = new UIManager(player, inventory, gameTime, requestManager);
+
+            while (currentScreen != GameScreen.Exit)
             {
-                "==============================================",
-                "대장장이 이야기",
-                "==============================================\n",
-                "1. 게임 시작",
-                "2. 게임 설명",
-                "3. 게임 종료",
-            };
+                Console.Clear();
 
-            PrintMain(menu);
-
-            while (isGameOn)
-            {
-                Console.Write("해당되는 번호를 입력하세요: ");
-                inputKeyInfo = Console.ReadKey(true);
-
-                switch (inputKeyInfo.Key)
+                // FSM에 따른 기능 구현
+                switch (currentScreen)
                 {
-                    // 게임 시작
-                    case ConsoleKey.D1:
-                    case ConsoleKey.NumPad1:
-                        Console.Clear();
-                        Console.WriteLine("플레이어 정보를 입력해주세요!");
-                        Console.Write("플레이어 이름: ");
-                        player = new Player(Console.ReadLine());
-                        uiManager = new UIManager(player, inventory, gameTime);
+                    // 메인 화면
+                    case GameScreen.MainMenu:
+                        currentScreen = ShowMainMenu(player.Name);
+                        break;
 
-                        Console.WriteLine(player.Name + "님 반갑습니다!");
+                    // 인 게임
+                    case GameScreen.InGame:
+                        currentScreen = ShowInGame(currentScreen, player, inventory, requestManager, gameTime, uiManager);
+                        break;
+
+                    // 인벤토리 보기
+                    case GameScreen.Inventory:
+                        currentScreen = ShowInventory(uiManager);
+                        break;
+                    
+                    // 게임 설명
+                    case GameScreen.Explanation:
+                        currentScreen = ShowExplanation();
+                        break;
+
+                    case GameScreen.Exit:
+                        Console.WriteLine("\n게임을 종료합니다.");
+                        break;
+
+                }
+
+                
 
                         // 본격적인 게임 시작
-                        while (!gameOver)
-                        {
-                            if (uiManager != null)
-                                GameStart(uiManager);
-                            else
-                                Console.WriteLine("오류 발생!!");
-                        }
-
                         //while (true)
                         //{
                         //info = Console.ReadKey(true);
@@ -76,40 +86,106 @@ namespace Smithy_Story
                         //inventory.RemoveItemById(1001);
                         //inventory.ShowInventory();
 
-                        break;
-
-                    // 게임 설명 버튼 눌렀을 시
-                    case ConsoleKey.D2:
-                    case ConsoleKey.NumPad2:
-                        break;
-
-                    // 게임 종료
-                    case ConsoleKey.D3:
-                    case ConsoleKey.NumPad3:
-                        Console.WriteLine("\n게임을 종료합니다.");
-                        isGameOn = false;
-                        break;
-
-                    // 예외
-                    default:
-                        Console.WriteLine("\n키를 잘못 입력함!\n");
-                        break;
-
-                }
-
             }
         }
 
-        static void GameStart(UIManager uiManager)
+        // 게임 설명 관련
+        public static GameScreen ShowExplanation()
         {
-            Console.Clear();
-            uiManager.UpdateAll();
+            bool open = true;
+            string text = "여기에 설명하는 글 작성"; // 수정 필요!!!!!!!!!!!!!!!!!!!
 
+            while (open)
+            {
+                // 설명 글 출력
+                Console.WriteLine("뒤로 가려면 0번 키 입력");
+                var input = Console.ReadKey(true);
+
+                if (input.Key == ConsoleKey.D0 || input.Key == ConsoleKey.NumPad0)
+                    return GameScreen.MainMenu;
+            }
+
+            return GameScreen.MainMenu;
         }
 
-        // 메인 화면 출력문
-        static void PrintMain(string[] menu)
+        // 인벤토리 목록 보기
+        public static GameScreen ShowInventory(UIManager uiManager)
         {
+            bool open = true;
+
+            while (open)
+            {
+                Console.Clear();
+                uiManager.UpdateInventoryUI();
+                Console.WriteLine("뒤로 가려면 0번 키 입력");
+                var input = Console.ReadKey(true);
+
+                if (input.Key == ConsoleKey.D0 || input.Key == ConsoleKey.NumPad0)
+                    return GameScreen.InGame;
+            }
+
+            return GameScreen.InGame;
+        }
+
+        // 인 게임 출력
+        public static GameScreen ShowInGame(GameScreen currentScreen, Player player, Inventory inventory, RequestManager req, GameTime gameTime, UIManager uiManager)
+        {
+            string menu = "=============================================" +
+                          "1. 의뢰 확인하기" +
+                          "2. 인벤토리 보기" +
+                          "3. 오늘의 상점 이용하기" +
+                          "4. 잠자기";
+                            
+            while (currentScreen == GameScreen.InGame)
+            {
+                Console.Clear();
+                uiManager.UpdatePlayerUI();
+                uiManager.UpdateTimeUI();
+
+                Console.WriteLine();
+                Console.WriteLine("1. 인벤토리 보기");
+                Console.WriteLine("2. 의뢰 확인하기");
+                Console.WriteLine("3. 하루 보내기");
+                Console.WriteLine("4. 메인 메뉴로 돌아가기");
+
+                Console.Write("입력: ");
+                ConsoleKeyInfo input = Console.ReadKey(true);
+                switch (input.Key)
+                {
+                    case ConsoleKey.D1:
+                        return GameScreen.Inventory;
+                        //uiManager.ShowInventory();
+                    case ConsoleKey.D2:
+                        Console.WriteLine("2번키 입력!");
+                        //uiManager.ShowRequests();
+                        break;
+                    case ConsoleKey.D3:
+                        Console.WriteLine("3번키 입력!");
+                        //uiManager.AdvanceDay();
+                        break;
+                    //case ConsoleKey.D4:
+                    //    Console.WriteLine("4번키 입력!");
+                    //    return GameScreen.MainMenu;
+                }
+            }
+
+            return GameScreen.MainMenu;
+        }
+
+
+        // 메인 화면 메소드
+        static GameScreen ShowMainMenu(string name)
+        {
+            string[] menu = new string[]
+            {
+                "==============================================",
+                name + "의 대장장이 이야기",
+                "==============================================\n",
+                "1. 게임 시작",
+                "2. 게임 설명",
+                "3. 게임 종료",
+            };
+
             int windowHeight = Console.WindowHeight;
             int topPadding = (windowHeight - menu.Length) / 4;
 
@@ -118,6 +194,31 @@ namespace Smithy_Story
 
             foreach (string line in menu)
                 WriteCentered(line);
+
+            Console.Write("해당되는 번호를 입력하세요: ");
+            inputKeyInfo = Console.ReadKey(false);
+
+            switch (inputKeyInfo.Key)
+            {
+                // 게임 시작
+                case ConsoleKey.D1:
+                case ConsoleKey.NumPad1:
+                    return GameScreen.InGame;
+                // 게임 설명 버튼 눌렀을 시
+                case ConsoleKey.D2:
+                case ConsoleKey.NumPad2:
+                    return GameScreen.Explanation;
+
+                // 게임 종료
+                case ConsoleKey.D3:
+                case ConsoleKey.NumPad3:
+                    return GameScreen.Exit;
+
+                // 예외
+                default:
+                    Console.WriteLine("\n키를 잘못 입력함!\n");
+                    return GameScreen.MainMenu;
+            }
         }
 
         // 가로 기준 센터 계산

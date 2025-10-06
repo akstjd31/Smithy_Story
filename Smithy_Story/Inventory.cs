@@ -96,7 +96,7 @@ namespace Smithy_Story
             {
                 Console.WriteLine(items[i].ToString());
             }
-            Console.WriteLine("\n");
+            Console.WriteLine("=============================================");
         }
     }
 }
