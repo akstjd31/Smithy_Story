@@ -57,6 +57,7 @@
     <Compile Include="RequestUI.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="ResourceData.cs" />
+    <Compile Include="ResourceFactory.cs" />
     <Compile Include="Shop.cs" />
     <Compile Include="ShopUI.cs" />
     <Compile Include="TimeUI.cs" />

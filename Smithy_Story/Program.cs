@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace Smithy_Story
@@ -7,18 +8,31 @@ namespace Smithy_Story
     // 화면 FSM
     public enum GameScreen
     { 
-        MainMenu, Explanation, RequestMenu, ArchiveRequestMenu, InventoryMenu, Shop, InGame, Exit
+        MainMenu,           // 메인 화면
+        Explanation,        // 게임 설명
+        DailyRequestMenu,   // 일일 의뢰 목록
+        ArchiveRequestMenu, // 수락한 의뢰 목록
+        WeaponMenu,         // 무기 만드는 법(정보)
+        Inventory,          // 인벤토리(작업장)
+        Shop,               // 재료 상점
+        InGame,             // 인게임
+        Exit                // 종료
     }
 
     internal class Program
     {
+
         static ConsoleKeyInfo inputKeyInfo;                         // 키 정보
         const int MaxDailyRequestCount = 10;                        // 일일 최대 의뢰 목록 개수 제한
         const int StartMoney = 1000;                                // 시작 금액
 
         static void Main(string[] args)
         {
+
             // 초기화 작업
+            ResourceData.GetAll().ToList();                         // 데이터 강제 로드 시키기
+            WeaponData.GetAll().ToList();                           // 위와 같음.
+
             GameScreen currentScreen = GameScreen.MainMenu;         // 시작하면 메인화면
             Inventory inventory = new Inventory();                  // 인벤토리
             GameTime gameTime = new GameTime();                     // 커스텀으로 설정 가능, 기본 (day: 0, hour: 8, min: 0)
@@ -54,13 +68,25 @@ namespace Smithy_Story
                         break;
 
                     // 일일 의뢰 목록 보기
-                    case GameScreen.RequestMenu:
+                    case GameScreen.DailyRequestMenu:
                         currentScreen = ShowDailyRequestList(uiManager);
                         break;
+
+                    // 수락한 의뢰 목록 보기
+                    //case GameScreen.ArchiveRequestMenu:
+                    //    currentScreen
+
+                    // 모든 무기 정보 만드는 법(레시피)
+                    case GameScreen.WeaponMenu:
+                        ShowWeaponMenual();
+                        break;
+
                     // 인벤토리 보기
-                    case GameScreen.InventoryMenu:
+                    case GameScreen.Inventory:
                         currentScreen = ShowInventory(uiManager);
                         break;
+
+                    // 상점
                     case GameScreen.Shop:
                         currentScreen = ShowResourceShop(shop, player, inventory);
                         break;
@@ -100,6 +126,31 @@ namespace Smithy_Story
             }
         }
         
+        // 무기 만드는 법 보기
+        public static GameScreen ShowWeaponMenual()
+        {
+            bool open = true;
+
+            Console.Clear();
+            while (open)
+            {
+                foreach (var weapon in WeaponData.GetAll())
+                {
+                    foreach (var item in weapon.RequiredResources)
+                        Console.WriteLine($"{item.Key} : {item.Value}");
+                }
+                Console.WriteLine("===========================================");
+                Console.Write("뒤로 가려면 0번 키 입력: ");
+                var input = Console.ReadKey(true);
+
+                if (input.Key == ConsoleKey.D0 || input.Key == ConsoleKey.NumPad0)
+                    return GameScreen.InGame;
+            }
+
+            return GameScreen.InGame;
+        }
+
+        // 재료 상점
         public static GameScreen ShowResourceShop(Shop shop, Player player, Inventory inventory)
         {
             bool open = true;
@@ -200,7 +251,7 @@ namespace Smithy_Story
                           "2. 내가 수락한 의뢰 목록 확인하기\n" +
                           "3. 인벤토리 보기\n" +
                           "4. 오늘의 상점 이용하기\n" +
-                          "5. 잠자기\n";
+                          "5. 무기 레시피 보기\n";
                             
             while (currentScreen == GameScreen.InGame)
             {
@@ -215,16 +266,18 @@ namespace Smithy_Story
                 switch (input.Key)
                 {
                     case ConsoleKey.D1:
-                        return GameScreen.RequestMenu;
+                        return GameScreen.DailyRequestMenu;
                     //uiManager.ShowInventory();
                     case ConsoleKey.D2:
                         return GameScreen.ArchiveRequestMenu;
                         //uiManager.ShowRequests();
                     case ConsoleKey.D3:
-                        return GameScreen.InventoryMenu;
+                        return GameScreen.Inventory;
                     case ConsoleKey.D4:
-                        Console.WriteLine("4번키 입력!");
                         return GameScreen.Shop;
+                    case ConsoleKey.D5:
+                        return GameScreen.WeaponMenu;
+
                 }
             }
 

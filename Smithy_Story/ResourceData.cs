@@ -19,10 +19,10 @@ namespace Smithy_Story
         {
             manager.AddItem(new Resource(id: 1001, name: "돌",         price: 1,  grade: Grade.Common));
             manager.AddItem(new Resource(id: 1002, name: "나무",       price: 2,  grade: Grade.Common));
-            manager.AddItem(new Resource(id: 1003, name: "금광석",     price: 5,  grade: Grade.Rare));
-            manager.AddItem(new Resource(id: 1004, name: "다이아몬드", price: 10, grade: Grade.Epic));
-            manager.AddItem(new Resource(id: 1005, name: "양털", price: 8, grade: Grade.Rare));
-            manager.AddItem(new Resource(id: 1006, name: "a", price: 20, grade: Grade.Legendary));
+            manager.AddItem(new Resource(id: 1003, name: "금광석",     price: 8,  grade: Grade.Rare));
+            manager.AddItem(new Resource(id: 1004, name: "철", price: 5, grade: Grade.Epic));
+            manager.AddItem(new Resource(id: 1005, name: "실", price: 4, grade: Grade.Rare));
+            manager.AddItem(new Resource(id: 1006, name: "다이아몬드", price: 20, grade: Grade.Legendary));
         }
 
         // 메소드

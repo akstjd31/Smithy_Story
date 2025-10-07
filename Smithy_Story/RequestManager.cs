@@ -110,8 +110,8 @@ namespace Smithy_Story
         {
             // 무기, 재료 모두 합치기
             var items = new List<IItem>();
-            items.AddRange(WeaponData.GetAll().Cast<IItem>());
             items.AddRange(ResourceData.GetAll().Cast<IItem>());
+            items.AddRange(WeaponData.GetAll().Cast<IItem>());
 
             if (items.Count == 0)
             {

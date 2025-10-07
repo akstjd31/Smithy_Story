@@ -12,7 +12,6 @@ namespace Smithy_Story
         const int MaxEnhanceLevel = 15;
 
         // 변수
-        private Dictionary<Resource, int> requiredResources;    // 필요 재료<재료, 수량>
         private int enhanceLevel;                               // 강화 수치
         private int craftMinutes;                               // 제작 시간
 
@@ -63,11 +62,10 @@ namespace Smithy_Story
             Quantity = quantity;
             this.craftMinutes = craftMinutes;
             this.enhanceLevel = enhanceLevel;
-            this.requiredResources = requiredResources;
+            RequiredResources = requiredResources;
         }
 
         // 메소드
-
         // 출력문 재정의
         public override string ToString() => $"[{ID}] {enhanceLevel}강 {Name}\t(등급: {Grade}, 가격: {Price})\n";
     }
