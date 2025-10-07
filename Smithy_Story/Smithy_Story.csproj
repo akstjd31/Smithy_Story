@@ -45,6 +45,8 @@
   <ItemGroup>
     <Compile Include="Craft.cs" />
     <Compile Include="DataManager.cs" />
+    <Compile Include="Enhance.cs" />
+    <Compile Include="EnhanceData.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="IItem.cs" />
     <Compile Include="Inventory.cs" />
@@ -63,8 +65,6 @@
     <Compile Include="ShopUI.cs" />
     <Compile Include="TimeUI.cs" />
     <Compile Include="UIManager.cs" />
-    <Compile Include="Upgrade.cs" />
-    <Compile Include="UpgradeManager.cs" />
     <Compile Include="Weapon.cs" />
     <Compile Include="WeaponData.cs" />
     <Compile Include="WeaponFactory.cs" />
