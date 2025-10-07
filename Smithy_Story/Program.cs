@@ -122,12 +122,13 @@ namespace Smithy_Story
         
         public static GameScreen CraftWeapon(Inventory inventory)
         {
-            Craft craft = new Craft(inventory);
-            var craftableWeapons = craft.GetCraftableWeapon();
+            Craft craft = new Craft(inventory);                 // 작업대 생성
             bool open = true;
+            int num = 0;
 
             while (open)
             {
+                var craftableWeapons = craft.GetCraftableWeapon();
                 Console.Clear();
                 Console.WriteLine("========================== 제작 가능한 장비 ==========================");
 
@@ -144,13 +145,17 @@ namespace Smithy_Story
                     Console.WriteLine("======================================================================");
                 }
 
-                Console.WriteLine("어떤 장비를 제작하실 건가요?");
-
-                Console.WriteLine("뒤로 가려면 0번 키 입력");
+                Console.WriteLine("어떤 장비를 제작하실 건가요?(뒤로 가기 0)");
                 var input = Console.ReadKey(true);
 
                 if (input.Key == ConsoleKey.D0 || input.Key == ConsoleKey.NumPad0)
                     return GameScreen.ForgeMenu;
+
+                if (char.IsDigit(input.KeyChar))
+                    num = input.KeyChar - '0';
+
+                if (num > 0)
+                    craft.CraftWeapon(craftableWeapons[num - 1]);
             }
 
             return GameScreen.ForgeMenu;

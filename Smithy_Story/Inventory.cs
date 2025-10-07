@@ -75,8 +75,14 @@ namespace Smithy_Story
             // 무기는 새롭게 추가하면 됨.
             items.Add(item);
         }
+        
+        // 아이템 삭제(item)
+        public void RemoveItem(IItem item)
+        {
+            items.Remove(item);
+        }
 
-        // 아이템 삭제
+        // 아이템 삭제(ID)
         public void RemoveItemById(int id, int quantity = 1)
         {
             List<IItem> existItems = GetItemById(id);
@@ -135,9 +141,8 @@ namespace Smithy_Story
 
             Console.WriteLine("- 무기/재료 목록");
             for (int i = 0; i < items.Count; i++)
-            {
                 Console.WriteLine(items[i].ToString());
-            }
+
             Console.WriteLine("=============================================");
         }
     }

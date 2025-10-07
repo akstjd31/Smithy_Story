@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Smithy_Story
@@ -36,6 +37,34 @@ namespace Smithy_Story
                     craftableWeapons.Add(weapon);
             }
             return craftableWeapons;
+        }
+
+        public void CraftWeapon(Weapon weapon)
+        {
+            if (weapon == null)
+                return;
+
+            foreach (var reqResource in weapon.RequiredResources)
+            {
+                Resource resource = reqResource.Key;
+                int requiredAmount = reqResource.Value;
+
+                var haveItem = inventory.GetItemsByName(resource.Name).FirstOrDefault();
+
+                // 재료 개수 줄이기 or 삭제
+                if (haveItem != null)
+                {
+                    haveItem.Quantity -= requiredAmount;
+                    if (haveItem.Quantity < 1)
+                        inventory.RemoveItem(haveItem);
+                }
+            }
+
+            Console.WriteLine($"{weapon.Name} 제작 중...");
+            Thread.Sleep(500);
+
+            inventory.AddItem(weapon);
+            Console.WriteLine($"{weapon.Name} 제작 완료!");
         }
     }
 }
