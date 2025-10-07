@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Craft.cs" />
     <Compile Include="DataManager.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="IItem.cs" />

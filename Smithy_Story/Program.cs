@@ -10,6 +10,10 @@ namespace Smithy_Story
     { 
         MainMenu,           // 메인 화면
         Explanation,        // 게임 설명
+        ForgeMenu,          // 장비 제작/강화/수리 선택 화면
+        Craft,              // 제작
+        Enhance,            // 강화
+        Repair,             // 수리
         DailyRequestMenu,   // 일일 의뢰 목록
         ArchiveRequestMenu, // 수락한 의뢰 목록
         WeaponMenu,         // 무기 만드는 법(정보)
@@ -70,6 +74,15 @@ namespace Smithy_Story
                         currentScreen = ShowInGame(currentScreen, player, inventory, requestManager, gameTime, uiManager);
                         break;
 
+                    // 장비 제작/강화/수리
+                    case GameScreen.ForgeMenu:
+                        currentScreen = ForgeMenual();
+                        break;
+
+                    case GameScreen.Craft:
+                        currentScreen = CraftWeapon(inventory);
+                        break;
+
                     // 일일 의뢰 목록 보기
                     case GameScreen.DailyRequestMenu:
                         currentScreen = ShowDailyRequestList(uiManager, requestManager, player);
@@ -104,30 +117,83 @@ namespace Smithy_Story
                         break;
 
                 }
+            }
+        }
+        
+        public static GameScreen CraftWeapon(Inventory inventory)
+        {
+            Craft craft = new Craft(inventory);
+            var craftableWeapons = craft.GetCraftableWeapon();
+            bool open = true;
 
-                
+            while (open)
+            {
+                Console.Clear();
+                Console.WriteLine("========================== 제작 가능한 장비 ==========================");
 
-                        // 본격적인 게임 시작
-                        //while (true)
-                        //{
-                        //info = Console.ReadKey(true);
-                        //if (info.Key == ConsoleKey.Z)
-                        //    Console.WriteLine(RequestManager.CreateItemRequest().ToString());
-                        //}
+                if (craftableWeapons.Count < 0 )
+                {
+                    Console.WriteLine("제작 가능한 장비가 없습니다!");
+                    
+                }
+                else
+                {
+                    for (int i = 0; i < craftableWeapons.Count; i++)
+                        Console.WriteLine($"{i + 1}. {craftableWeapons[i].Name}");
 
-                        // 인벤토리 테스트
-                        //foreach (var item in ResourceData.GetAll())
-                        //    inventory.AddItem(item);
+                    Console.WriteLine("======================================================================");
+                }
 
-                        //inventory.AddItem(new Resource(1001, "돌", 1, Grade.Common));
-                        //inventory.ShowInventory();
+                Console.WriteLine("어떤 장비를 제작하실 건가요?");
 
+                Console.WriteLine("뒤로 가려면 0번 키 입력");
+                var input = Console.ReadKey(true);
 
-                        //inventory.RemoveItemById(1001);
-                        //inventory.RemoveItemById(1001);
-                        //inventory.ShowInventory();
+                if (input.Key == ConsoleKey.D0 || input.Key == ConsoleKey.NumPad0)
+                    return GameScreen.ForgeMenu;
+            }
+
+            return GameScreen.ForgeMenu;
+        }
+
+        // 장비 제작/강화/수리 선택
+        public static GameScreen ForgeMenual()
+        {
+            bool open = true;
+            string menu = "1. 장비 제작하기\n" +
+                          "2. 장비 강화하기\n" +
+                          "3. 장비 수리하기\n" +
+                          "Any. 뒤로가기";
+
+            while (open)
+            {
+                Console.Clear();
+                Console.WriteLine(menu);
+                Console.Write("입력: ");
+                var input = Console.ReadKey(true);
+
+                switch (input.Key)
+                {
+                    // 장비 제작
+                    case ConsoleKey.D1:
+                    case ConsoleKey.NumPad1:
+                        return GameScreen.Craft;
+
+                    // 장비 강화
+                    case ConsoleKey.D2:
+                    case ConsoleKey.NumPad2:
+                        return GameScreen.Enhance;
+                    
+                    // 장비 수리
+                    case ConsoleKey.D3:
+                    case ConsoleKey.NumPad3:
+                        return GameScreen.Repair;
+                    default:
+                        return GameScreen.InGame;
+                }
 
             }
+            return GameScreen.InGame;
         }
 
         // 수락한 의뢰 확인하기
@@ -161,7 +227,7 @@ namespace Smithy_Story
             return GameScreen.InGame;
         }
         
-        // 무기 만드는 법 보기
+        // 무기 레시피 보기
         public static GameScreen ShowWeaponMenual()
         {
             bool open = true;
@@ -296,11 +362,12 @@ namespace Smithy_Story
         public static GameScreen ShowInGame(GameScreen currentScreen, Player player, Inventory inventory, RequestManager reqManager, GameTime gameTime, UIManager uiManager)
         {
             string menu = "=============================================\n" +
-                          "1. 오늘의 의뢰 확인하기\n" +
-                          "2. 내가 수락한 의뢰 목록 확인하기\n" +
-                          "3. 인벤토리 보기\n" +
-                          "4. 오늘의 상점 이용하기\n" +
-                          "5. 무기 레시피 보기\n";
+                          "1. 장비 제작/강화/수리하기\n" +
+                          "2. 오늘의 의뢰 확인하기\n" +
+                          "3. 내가 수락한 의뢰 목록 확인하기\n" +
+                          "4. 인벤토리 보기\n" +
+                          "5. 오늘의 상점 이용하기\n" +
+                          "6. 무기 레시피 보기\n";
                             
             while (currentScreen == GameScreen.InGame)
             {
@@ -315,16 +382,18 @@ namespace Smithy_Story
                 switch (input.Key)
                 {
                     case ConsoleKey.D1:
+                        return GameScreen.ForgeMenu;
+                    case ConsoleKey.D2:
                         return GameScreen.DailyRequestMenu;
                     //uiManager.ShowInventory();
-                    case ConsoleKey.D2:
+                    case ConsoleKey.D3:
                         return GameScreen.ArchiveRequestMenu;
                         //uiManager.ShowRequests();
-                    case ConsoleKey.D3:
-                        return GameScreen.Inventory;
                     case ConsoleKey.D4:
-                        return GameScreen.Shop;
+                        return GameScreen.Inventory;
                     case ConsoleKey.D5:
+                        return GameScreen.Shop;
+                    case ConsoleKey.D6:
                         return GameScreen.WeaponMenu;
 
                 }

@@ -26,7 +26,7 @@ namespace Smithy_Story
         public Grade Grade { get; private set; }
 
         // 생성자
-        public Resource(int id, string name, int price, Grade grade, int quantity = 1)
+        public Resource(int id, string name, int price, Grade grade, int quantity = 5)  // 수량 = 임시
         {
             ID = id;
             Name = name;
@@ -38,6 +38,6 @@ namespace Smithy_Story
         // 메소드
 
         // 출력문 재정의
-        public override string ToString() => $"[{ID}] {Name}\t(개수: {Quantity}, 가격: {Price}, 등급: {Grade})\n";
+        public override string ToString() => $"[{ID}] {Name}\t(개수: {Quantity}개, 개당 가격: {Price}, 등급: {Grade})\n";
     }
 }

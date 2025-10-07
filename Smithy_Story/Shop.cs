@@ -67,14 +67,16 @@ namespace Smithy_Story
             int totalPrice = item.Price * quantity;
             if (player.Money >= totalPrice)
             {
+                // 인벤에 추가
                 inventory.AddItem(item, quantity);
+
+                // 플레이어 소비, 상점 개수 변동
                 player.Money -= totalPrice;
-                stock[idx].Quantity -= quantity;
 
                 Console.WriteLine($"{item.Name}을(를) {quantity}만큼 구매했습니다!");
 
                 // 해당 물품의 수량이 없다면 리스트에서 제거
-                if (stock[idx].Quantity <= 0)
+                if (stock[idx].Quantity - quantity <= 0)
                     stock.RemoveAt(idx);
             }
             else

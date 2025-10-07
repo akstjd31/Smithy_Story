@@ -12,9 +12,51 @@ namespace Smithy_Story
         private List<IItem> items = new List<IItem>();
 
         // 메소드
+
+        // 해당 무기를 만들 수 있는가?
+        public bool CanCraftWeapon(Weapon weapon)
+        {
+            if (items == null)
+            {
+                Console.WriteLine("[오류] 인벤토리의 items가 초기화되지 않았습니다.");
+                return false;
+            }
+
+            // 무기 제작에 필요한 재료(Resource), 수량(int) 비교
+            foreach (var reqResource in weapon.RequiredResources)
+            {
+                Resource requiredResource = reqResource.Key;
+                int requiredAmount = reqResource.Value;
+
+                // 제일 먼저 찾은거로 비교 (대소문자 무시)
+                var haveItem = items.FirstOrDefault(i =>
+                    i != null && i.Name.Equals(requiredResource.Name, StringComparison.OrdinalIgnoreCase));
+
+                if (haveItem == null)
+                {
+                    Console.WriteLine($"[부족] {requiredResource.Name} 이(가) 인벤토리에 없습니다.");
+                    return false;
+                }
+
+                if (haveItem.Quantity < requiredAmount)
+                {
+                    Console.WriteLine($"[부족] {requiredResource.Name} 부족 ({haveItem.Quantity}/{requiredAmount})");
+                    return false;
+                }
+
+                Console.WriteLine($"[확인] {requiredResource.Name} OK ({haveItem.Quantity}/{requiredAmount})");
+            }
+
+            return true;
+        }
+
+
         // 아이템 추가
         public void AddItem(IItem item, int quantity = 1)
         {
+            if (quantity != 1)
+                item.Quantity = quantity;
+
             // 개수를 늘릴 수 있는가?
             if (item.IsStackable)
             {
