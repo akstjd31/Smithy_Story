@@ -69,9 +69,13 @@ namespace Smithy_Story
             {
                 inventory.AddItem(item, quantity);
                 player.Money -= totalPrice;
+                stock[idx].Quantity -= quantity;
 
                 Console.WriteLine($"{item.Name}을(를) {quantity}만큼 구매했습니다!");
-                stock.RemoveAt(idx);
+
+                // 해당 물품의 수량이 없다면 리스트에서 제거
+                if (stock[idx].Quantity <= 0)
+                    stock.RemoveAt(idx);
             }
             else
             {

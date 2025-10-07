@@ -12,10 +12,12 @@ namespace Smithy_Story
         const int MaxEnhanceLevel = 15;
 
         // 변수
-        private int enhanceLevel;   // 강화 수치
-        private int craftMinutes;   // 제작 시간
+        private Dictionary<Resource, int> requiredResources;    // 필요 재료<재료, 수량>
+        private int enhanceLevel;                               // 강화 수치
+        private int craftMinutes;                               // 제작 시간
 
         // 프로퍼티
+        public Dictionary<Resource, int> RequiredResources { get; private set; }
         public int ID { get; private set; }
         public string Name { get; private set; }                
         public int EnhanceLevel                         
@@ -50,7 +52,9 @@ namespace Smithy_Story
 
         // 생성자
         // 무기는 무조건 개수 1 고정!!!!!!!!
-        public Weapon(int id, string name, int price, Grade grade, int craftMinutes, int quantity = 1, int enhanceLevel = 0)
+        public Weapon(int id, string name, int price, Grade grade, int craftMinutes,
+            Dictionary<Resource, int> requiredResources,
+            int quantity = 1, int enhanceLevel = 0)
         {
             ID = id;
             Name = name;
@@ -59,6 +63,7 @@ namespace Smithy_Story
             Quantity = quantity;
             this.craftMinutes = craftMinutes;
             this.enhanceLevel = enhanceLevel;
+            this.requiredResources = requiredResources;
         }
 
         // 메소드

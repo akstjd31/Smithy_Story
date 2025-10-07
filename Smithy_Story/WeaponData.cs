@@ -19,11 +19,36 @@ namespace Smithy_Story
         // 생성자
         static WeaponData()
         {
-            manager.AddItem(new Weapon(id: 1, name: "곡괭이", price: 5, grade: Grade.Common, craftMinutes: 10));
-            manager.AddItem(new Weapon(id: 2, name: "목검", price: 15, grade: Grade.Common, craftMinutes: 15));
-            manager.AddItem(new Weapon(id: 3, name: "나무활", price: 20, grade: Grade.Common, craftMinutes: 20));
-            manager.AddItem(new Weapon(id: 4, name: "패월도", price: 40, grade: Grade.Epic, craftMinutes: 80));
-            manager.AddItem(new Weapon(id: 5, name: "천총운검", price: 5, grade: Grade.Common, craftMinutes: 140));
+            manager.AddItem(new Weapon(id: 1, name: "곡괭이", price: 5,   grade: Grade.Common, craftMinutes: 10,
+                requiredResources: new Dictionary<Resource, int> {
+                    { ResourceData.GetByName("돌"),   2 },
+                    { ResourceData.GetByName("나무"), 1 }
+                }));
+
+            manager.AddItem(new Weapon(id: 2, name: "목검", price: 15,    grade: Grade.Common, craftMinutes: 15,
+                requiredResources: new Dictionary<Resource, int> {
+                    { ResourceData.GetByName("나무"),   3 }
+                }));
+
+            manager.AddItem(new Weapon(id: 3, name: "나무활", price: 20,  grade: Grade.Common, craftMinutes: 20,
+                requiredResources: new Dictionary<Resource, int> {
+                    { ResourceData.GetByName("나무"), 2 },
+                    { ResourceData.GetByName("실"),   1 }
+                }));
+
+            manager.AddItem(new Weapon(id: 4, name: "패월도", price: 40,  grade: Grade.Epic,   craftMinutes: 80,
+                requiredResources: new Dictionary<Resource, int> {
+                    { ResourceData.GetByName("청동"),   3 },
+                    { ResourceData.GetByName("철"), 2 },
+                    { ResourceData.GetByName("나무"), 1 }
+                }));
+
+            manager.AddItem(new Weapon(id: 5, name: "천총운검", price: 5, grade: Grade.Common, craftMinutes: 140,
+                requiredResources: new Dictionary<Resource, int> {
+                    { ResourceData.GetByName("금"),   5 },
+                    { ResourceData.GetByName("철"),   3 },
+                    { ResourceData.GetByName("나무"), 1 }
+                }));
         }
 
         // 메소드
