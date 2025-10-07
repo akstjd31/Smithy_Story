@@ -24,9 +24,12 @@ namespace Smithy_Story
             {
                 Console.WriteLine("============== 일일 의뢰 목록 ===============");
 
-                foreach (Request request in requestManager.GetDailyRequests())
-                    Console.WriteLine(request.ToString());
-                
+                var requests = requestManager.GetDailyRequests();
+                for (int i = 0; i < requests.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}. {requests[i].ToString()}\n");
+                }
+
                 Console.WriteLine("=============================================");
             }
         }

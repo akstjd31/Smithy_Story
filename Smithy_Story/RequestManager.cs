@@ -92,11 +92,11 @@ namespace Smithy_Story
             switch (type)
             {
                 case RequestType.CraftWeapon:
-                    return "[제작 의뢰]\t" + item.Name;
+                    return "[제작 의뢰]:" + item.Name;
                 case RequestType.RepairWeapon:
-                    return "[수리 의뢰]\t" + item.Name;
+                    return "[수리 의뢰]:" + item.Name;
                 case RequestType.DeliverItem:
-                    return "[배달 의뢰]\t" + item.Name;
+                    return "[배달 의뢰]:" + item.Name;
                 default:
                     return item.Name;
             }

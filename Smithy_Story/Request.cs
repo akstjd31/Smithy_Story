@@ -42,6 +42,6 @@ namespace Smithy_Story
             return day > DeadlineDay;
         }
 
-        public override string ToString() =>  $"[{Title}] 의뢰:\t(보상: {Reward} 골드, 마감: Day {DeadlineDay}, 상태: {Status})";
+        public override string ToString() =>  $"{Title}\n(보상: {Reward} 골드, 주어진 시간: {DeadlineDay} 일, 상태: {Status})";
     }
 }
