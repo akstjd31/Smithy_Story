@@ -14,25 +14,29 @@ namespace Smithy_Story
         private Inventory inventory;
         private GameTime gameTime;
         private RequestManager requestManager;
+        private Shop shop;
 
         // UI 클래스
         private PlayerUI playerUI;
         private TimeUI timeUI;
         private RequestUI dailyRequestUI;
         private InventoryUI inventoryUI;
+        private ShopUI shopUI;
 
         // 생성자
-        public UIManager(Player player, Inventory inventory, GameTime gameTime, RequestManager requestManager)
+        public UIManager(Player player, Inventory inventory, GameTime gameTime, RequestManager requestManager, Shop shop)
         {
             this.player = player;
             this.inventory = inventory;
             this.gameTime = gameTime;
             this.requestManager = requestManager;
+            this.shop = shop;
 
             playerUI = new PlayerUI(player);
             timeUI = new TimeUI(gameTime);
             inventoryUI = new InventoryUI(inventory);
             dailyRequestUI = new RequestUI(requestManager);
+            shopUI = new ShopUI(shop);
         }
 
         // 의뢰 목록 출력
@@ -62,5 +66,9 @@ namespace Smithy_Story
             timeUI.Update();
         }
 
+        public void UpdateShopUI()
+        {
+            shopUI.Update();
+        }
     }
 }

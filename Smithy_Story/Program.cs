@@ -7,13 +7,14 @@ namespace Smithy_Story
     // 화면 FSM
     public enum GameScreen
     { 
-        MainMenu, Explanation, RequestMenu, ArchiveRequestMenu, InventoryMenu, InGame, Exit
+        MainMenu, Explanation, RequestMenu, ArchiveRequestMenu, InventoryMenu, Shop, InGame, Exit
     }
 
     internal class Program
     {
         static ConsoleKeyInfo inputKeyInfo;                         // 키 정보
         const int MaxDailyRequestCount = 10;                        // 일일 최대 의뢰 목록 개수 제한
+        const int StartMoney = 1000;                                // 시작 금액
 
         static void Main(string[] args)
         {
@@ -22,14 +23,15 @@ namespace Smithy_Story
             Inventory inventory = new Inventory();                  // 인벤토리
             GameTime gameTime = new GameTime();                     // 커스텀으로 설정 가능, 기본 (day: 0, hour: 8, min: 0)
             RequestManager requestManager = new RequestManager();   // 의뢰 관리자
+            Shop shop = new Shop();                                 // 재료 상점
             UIManager uiManager = null;                             // 인 게임 UI
             Player player = null;                                   // 플레이어
 
             Console.WriteLine("플레이어 정보를 입력해주세요!");
             Console.Write("플레이어 이름: ");
-            player = new Player(Console.ReadLine());
+            player = new Player(Console.ReadLine(), money: StartMoney);
             Console.WriteLine(player.Name + "님 반갑습니다!");
-            uiManager = new UIManager(player, inventory, gameTime, requestManager);
+            uiManager = new UIManager(player, inventory, gameTime, requestManager, shop);
 
             // 미리 의뢰 만들어놓기
             requestManager.GenerateDailyRequests(MaxDailyRequestCount);
@@ -59,7 +61,9 @@ namespace Smithy_Story
                     case GameScreen.InventoryMenu:
                         currentScreen = ShowInventory(uiManager);
                         break;
-                    
+                    case GameScreen.Shop:
+                        currentScreen = ShowResourceShop(shop, player, inventory);
+                        break;
                     // 게임 설명
                     case GameScreen.Explanation:
                         currentScreen = ShowExplanation();
@@ -94,6 +98,43 @@ namespace Smithy_Story
                         //inventory.ShowInventory();
 
             }
+        }
+        
+        public static GameScreen ShowResourceShop(Shop shop, Player player, Inventory inventory)
+        {
+            bool open = true;
+            int num, quantity;
+            Console.Clear();
+            shop.RefreshStock();    // 샵 새로고침은 따로 일(Day)이 지나면 갱신되어야함. (일단 테스트용이므로 여기에 있음)
+            while (open)
+            {
+                shop.ShowStock();
+
+                Console.Write("구매하실 재료의 번호를 입력해주세요(뒤로 가기 0): ");
+                num = int.Parse(Console.ReadLine());
+
+                if (num == 0)
+                    return GameScreen.InGame;
+
+               if (!shop.IsExistItemIdx(num - 1))
+               {
+                    Console.WriteLine("잘못된 번호를 입력하셨습니다.");
+                    continue;
+               }
+
+                Console.Write("\n구매하실 재료의 수량을 입력해주세요: ");
+                quantity = int.Parse(Console.ReadLine());
+
+                if (!shop.IsExistItemQuantity(num - 1, quantity))
+                {
+                    Console.WriteLine("잘못된 수량을 입력하셨습니다.");
+                    continue;
+                }
+
+                shop.Buy(num, quantity, player, inventory);
+            }
+
+            return GameScreen.InGame;
         }
 
         public static GameScreen ShowDailyRequestList(UIManager uiManager)
@@ -181,9 +222,9 @@ namespace Smithy_Story
                         //uiManager.ShowRequests();
                     case ConsoleKey.D3:
                         return GameScreen.InventoryMenu;
-                    //case ConsoleKey.D4:
-                    //    Console.WriteLine("4번키 입력!");
-                    //    return GameScreen.MainMenu;
+                    case ConsoleKey.D4:
+                        Console.WriteLine("4번키 입력!");
+                        return GameScreen.Shop;
                 }
             }
 
