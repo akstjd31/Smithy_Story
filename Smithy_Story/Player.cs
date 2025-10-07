@@ -10,7 +10,6 @@ namespace Smithy_Story
     {
         // 상수
         const int MaxFatigue = 100; // 최대 피로도
-        const int MaxRequestCount = 3;
 
         // 변수
         private string name;
@@ -55,35 +54,11 @@ namespace Smithy_Story
             this.name = name;
             this.fatigue = fatigue;
             this.money = money;
+
+            archiveRequests = new List<Request>();
         }
 
         // 메소드
-        // 의뢰 수락
-        public void AcceptRequest(Request request)
-        {
-            if (request == null)
-                return;
-
-            // 보유 의뢰 개수를 초과하지 못함.
-            if (this.archiveRequests.Count >= MaxRequestCount)
-            {
-                Console.WriteLine($"하루 받을 수 있는 최대 의뢰의 수는 {MaxRequestCount}개 입니다!");
-                return;
-            }
-
-            this.archiveRequests.Add(request);
-            Console.WriteLine(request.Title + ": 새로운 의뢰 수락!");
-        }
-
-        // 의뢰 완료
-        public void CompleteReqeust(Request request)
-        {
-            if (this.archiveRequests.Contains(request))
-            {
-                archiveRequests.Remove(request);
-                Console.WriteLine(request.Title + ": 의뢰 완료!");
-            }
-        }
 
         public void ShowActiveReqeusts()
         {

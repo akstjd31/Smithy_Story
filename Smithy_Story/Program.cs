@@ -23,10 +23,8 @@ namespace Smithy_Story
     {
 
         static ConsoleKeyInfo inputKeyInfo;                         // 키 정보
-        static int acceptedRequestCount = 0;                        // 수락한 의뢰 개수
 
-        const int MaxDailyRequestCount = 10;                        // 일일 최대 의뢰 목록 개수 제한
-        const int MaxAcceptRequestCount = 3;                        // 플레이어가 수락할 수 있는 최대 의뢰 개수
+        const int MaxDailyRequestCount = 7;                        // 일일 최대 의뢰 목록 개수 제한
         const int StartMoney = 1000;                                // 시작 금액
 
         static void Main(string[] args)
@@ -74,7 +72,7 @@ namespace Smithy_Story
 
                     // 일일 의뢰 목록 보기
                     case GameScreen.DailyRequestMenu:
-                        currentScreen = ShowDailyRequestList(uiManager);
+                        currentScreen = ShowDailyRequestList(uiManager, requestManager, player);
                         break;
 
                     // 수락한 의뢰 목록 보기
@@ -136,10 +134,9 @@ namespace Smithy_Story
         public static GameScreen ShowArchiveReqeustList(Player player)
         {
             bool open = true;
-
-            Console.Clear();
             while (open)
             {
+                Console.Clear();
                 Console.WriteLine("==================== 수락한 의뢰 목록 ====================");
                 if (player.ArchiveRequests.Count < 1)
                 {
@@ -154,7 +151,7 @@ namespace Smithy_Story
                 }
                 Console.WriteLine("==========================================================\n");
 
-                Console.Write("뒤로 가려면 0번 키 입력: ");
+                Console.WriteLine("뒤로 가려면 0번 키 입력");
                 var input = Console.ReadKey(true);
 
                 if (input.Key == ConsoleKey.D0 || input.Key == ConsoleKey.NumPad0)
@@ -226,19 +223,33 @@ namespace Smithy_Story
             return GameScreen.InGame;
         }
 
-        public static GameScreen ShowDailyRequestList(UIManager uiManager)
+        // 일일 의뢰 확인
+        public static GameScreen ShowDailyRequestList(UIManager uiManager, RequestManager reqManager, Player player)
         {
+            int num = 0;
             bool open = true;
+            var requests = reqManager.GetDailyRequests();
+            
             while (open)
             {
                 Console.Clear();
                 uiManager.UpdateDailyRequestUI();
-                Console.Write("뒤로 가려면 0번 키 입력: ");
+
+                Console.Write("수락할 의뢰를 선택하세요(뒤로가기 0): ");
                 var input = Console.ReadKey(true);
 
                 if (input.Key == ConsoleKey.D0 || input.Key == ConsoleKey.NumPad0)
                     return GameScreen.InGame;
+
+                if (char.IsDigit(input.KeyChar))
+                    num = input.KeyChar - '0';
+
+                if (num < 0 || num > requests.Count)
+                    continue;
+
+                reqManager.AcceptRequest(num - 1, player);
             }
+
             return GameScreen.InGame;
         }
 

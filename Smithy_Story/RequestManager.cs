@@ -19,6 +19,7 @@ namespace Smithy_Story
     public class RequestManager
     {
         // 상수
+        const int MaxRequestCount = 3;  // 플레이어가 지닐 수 있는 의뢰 최대 개수
 
         // 변수
         private int nextId = 101;
@@ -29,10 +30,38 @@ namespace Smithy_Story
         // 생성자
         // 메소드
 
+        // 의뢰 수락(인덱스, 플레이어)
+        public void AcceptRequest(int idx, Player player)
+        {
+            if (dailyRequests[idx] == null)
+                return;
+
+            // 보유 의뢰 개수를 초과하지 못함.
+            if (player.ArchiveRequests.Count >= MaxRequestCount)
+            {
+                Console.WriteLine($"하루 받을 수 있는 최대 의뢰의 수는 {MaxRequestCount}개 입니다!");
+                return;
+            }
+
+            player.ArchiveRequests.Add(dailyRequests[idx]);
+            Console.WriteLine(dailyRequests[idx].Title + " 새로운 의뢰 수락!");
+            dailyRequests.RemoveAt(idx);
+        }
+
+        // 의뢰 완료
+        public void CompleteReqeust(Request request, Player player)
+        {
+            if (player.ArchiveRequests.Contains(request))
+            {
+                player.ArchiveRequests.Remove(request);
+                Console.WriteLine(request.Title + " 의뢰 완료!");
+            }
+        }
+
         // 일일 의뢰 목록 생성하기
         public void GenerateDailyRequests(int count)
         {
-            dailyRequests.Clear();
+            dailyRequests.Clear();  // 의뢰 리스트를 비우고 새로 만듦.
 
             for (int i = 0; i < count; i++)
             {
