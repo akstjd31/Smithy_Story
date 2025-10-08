@@ -48,6 +48,7 @@ namespace Smithy_Story
 
         public void ShowStock()
         {
+            Console.Clear();
             Console.WriteLine("===================== 상점 =====================");
             for (int i = 0; i < stock.Length; i++)
             {

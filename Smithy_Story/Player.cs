@@ -59,7 +59,17 @@ namespace Smithy_Story
         }
 
         // 메소드
+        // 피로도 증가
+        public void IncreaseFatigue(int amount)
+        {
+            Fatigue += amount;
+            if (Fatigue > MaxFatigue) Fatigue = MaxFatigue;
+        }
 
+        // 피로도 초기화 (하루가 지났을 때)
+        public void ResetFatigue() => Fatigue = 0;
+
+        // 보유 중인 의뢰 출력
         public void ShowActiveReqeusts()
         {
             if (!this.archiveRequests.Any())

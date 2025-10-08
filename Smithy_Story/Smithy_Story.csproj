@@ -48,6 +48,7 @@
     <Compile Include="Enhance.cs" />
     <Compile Include="EnhanceData.cs" />
     <Compile Include="EnhanceManager.cs" />
+    <Compile Include="GameManager.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="IItem.cs" />
     <Compile Include="Inventory.cs" />
