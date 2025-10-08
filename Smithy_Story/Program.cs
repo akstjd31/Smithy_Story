@@ -382,10 +382,11 @@ namespace Smithy_Story
         {
             bool open = true;
             int num, quantity;
-            Console.Clear();
+            
             shop.RefreshStock();    // 샵 새로고침은 따로 일(Day)이 지나면 갱신되어야함. (일단 테스트용이므로 여기에 있음)
             while (open)
             {
+                Console.Clear();
                 shop.ShowStock();
 
                 Console.Write("구매하실 재료의 번호를 입력해주세요(뒤로 가기 0): ");
@@ -394,9 +395,18 @@ namespace Smithy_Story
                 if (num == 0)
                     return GameScreen.InGame;
 
+                if (num > shop.GetStockLength())
+                {
+                    Console.WriteLine("번호를 잘못 입력하셨습니다.");
+                    Thread.Sleep(200);
+                    continue;
+                }
+
+                // 해당 위치에 아이템이 없는 경우 (다 팔림)
                 if (!shop.IsExistItemIdx(num - 1))
                 {
-                    Console.WriteLine("잘못된 번호를 입력하셨습니다.");
+                    Console.WriteLine("현재 번호에 아이템이 없습니다.");
+                    Thread.Sleep(200);
                     continue;
                 }
 

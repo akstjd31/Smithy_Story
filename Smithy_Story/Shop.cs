@@ -11,40 +11,58 @@ namespace Smithy_Story
         // 상수
         const int MaxDisplayItemCount = 5;  // 상점 진열 최대 갯수
         // 변수
-        private List<IItem> stock;
+        private IItem[] stock;              // 구매 시 해당 위치는 빈칸으로 남아있는게 나아서 리스트말고 배열로 선언함.
         private Random rand;
 
         // 생성자
         public Shop()
         {
-            stock = new List<IItem>();
+            stock = new IItem[MaxDisplayItemCount];
             rand = new Random();
         }
 
+        // 길이 반환
+        public int GetStockLength() => stock.Length;
+
         public void RefreshStock()
         {
-            stock.Clear();
+            // 배열 초기화
+            Array.Clear(stock, 0, stock.Length);
 
+            // 전체 재료 목록 가져오기
             var resources = ResourceData.GetAll().ToList();
 
-            var randomSelection = resources.OrderBy(x => rand.Next()).Take(MaxDisplayItemCount).ToList();
+            // 랜덤으로 5개(MaxDisplayItemCount) 선택
+            var randomSelection = resources
+                .OrderBy(x => rand.Next())
+                .Take(MaxDisplayItemCount)
+                .ToList();
 
-            stock.AddRange(randomSelection);
+            // 배열에 하나씩 채워 넣기
+            for (int i = 0; i < randomSelection.Count; i++)
+            {
+                stock[i] = randomSelection[i];
+            }
         }
+
 
         public void ShowStock()
         {
             Console.WriteLine("===================== 상점 =====================");
-            for (int i = 0; i < stock.Count; i++)
+            for (int i = 0; i < stock.Length; i++)
             {
                 var item = stock[i];
-                Console.WriteLine($"{i + 1}. {item.ToString()}");
+
+                if (item != null)
+                    Console.WriteLine($"{i + 1}. {item.ToString()}");
+                else
+                    Console.WriteLine($"{i + 1}. 물품 준비 중");
             }
             Console.WriteLine("================================================");
         }
 
         // 인덱스 체크
-        public bool IsExistItemIdx(int idx) => idx >= 0 && idx < stock.Count ? true : false;
+        public bool IsExistItemIdx(int idx) => stock[idx] != null;
 
         // 수량 체크(이미 인덱스 체크는 한 상태)
         public bool IsExistItemQuantity(int idx, int quantity) => quantity > 0 && (quantity <= stock[idx].Quantity) ? true : false;
@@ -75,9 +93,9 @@ namespace Smithy_Story
 
                 Console.WriteLine($"{item.Name}을(를) {quantity}만큼 구매했습니다!");
 
-                // 해당 물품의 수량이 없다면 리스트에서 제거
+                // 해당 물품의 수량이 없다면 null 처리
                 if (stock[idx].Quantity - quantity <= 0)
-                    stock.RemoveAt(idx);
+                    stock[idx] = null;
             }
             else
             {

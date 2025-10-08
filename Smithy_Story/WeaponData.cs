@@ -38,7 +38,7 @@ namespace Smithy_Story
 
             manager.AddItem(new Weapon(id: 4, name: "패월도", price: 40, grade: Grade.Epic, craftMinutes: 80,
                 requiredResources: new Dictionary<Resource, int> {
-                    { ResourceData.GetByName("금광석"),   3 },
+                    { ResourceData.GetByName("금광석"), 3 },
                     { ResourceData.GetByName("철"),     2 },
                     { ResourceData.GetByName("나무"),   1 }
                 }));
