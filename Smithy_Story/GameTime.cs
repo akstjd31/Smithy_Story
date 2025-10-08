@@ -10,10 +10,6 @@ namespace Smithy_Story
     public class GameTime
     {
         // 상수
-        // 변수
-        private int day;    // 일
-        private int hour;   // 시간
-        private int minute; // 분
 
         // 프로퍼티
         public int Day
@@ -28,17 +24,17 @@ namespace Smithy_Story
         // 생성자
         public GameTime()
         {
-            day = 0;
-            hour = 8;
-            minute = 0;
+            Day = 0;
+            Hour = 8;
+            Minute = 0;
         }
 
         // 커스텀 시간 설정
         public GameTime(int day, int hour, int minute)
         {
-            this.day = day;
-            this.hour = hour;
-            this.minute = minute;
+            Day = day;
+            Hour = hour;
+            Minute = minute;
         }
 
         // 메소드
@@ -46,33 +42,27 @@ namespace Smithy_Story
         // 시간 증가 메소드
         public void AddMinutes(int min)
         {
-            minute += min;
+            Minute += min;
 
             // minute 계산
-            while (minute >= 60)
+            while (Minute >= 60)
             {
-                minute -= 60;
-                hour++;
-            }
-
-            // hour 계산
-            while (hour >= 24)
-            {
-                hour -= 24;
+                Minute -= 60;
+                Hour++;
             }
         }
 
         // 일 추가 메소드
-        public void AddDays() => this.day++;
+        public void AddDays() => Day++;
 
         // 시간 초기화
         public void SetTime(int hour, int minute)
         {
-            this.hour = hour;
-            this.minute = minute;
+            Hour = hour;
+            Minute = minute;
         }
 
         // 출력 ?일 ??:??
-        public override string ToString() => $"[Day {day}]\t{hour:D2}:{minute:D2}";
+        public override string ToString() => $"[Day {Day}]\t{Hour:D2}:{Minute:D2}";
     }
 }

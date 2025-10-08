@@ -27,12 +27,7 @@ namespace Smithy_Story
         public int Fatigue
         {
             get => fatigue;
-            private set
-            {
-                if (value <= 0) fatigue = 0;
-                else if (value > MaxFatigue) fatigue = MaxFatigue;
-                else fatigue = value;
-            }
+            private set {  fatigue = value; }
         }
 
         public int Money

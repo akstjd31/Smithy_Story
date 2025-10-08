@@ -44,7 +44,7 @@ namespace Smithy_Story
 
             currentScreen = GameScreen.MainMenu;
 
-            Init(); // 초기 세팅
+            Settings(); // 초기 세팅
         }
 
         // 게임 구동시키기
@@ -175,36 +175,37 @@ namespace Smithy_Story
             }
         }
 
-        // 휴식 시점 체크 (풀 피로도, 시간 초과)
-        private bool NeedsRest() => player.Fatigue >= Player.MaxFatigue || gameTime.Hour >= 24;
-
         // 자야됨.
-        private void Sleep()
+        private bool Sleep()
         {
-            if (NeedsRest())
+            if (player.Fatigue >= Player.MaxFatigue || gameTime.Hour >= 24)
             {
+                Console.Clear();
                 Console.WriteLine("\n피로가 누적되었거나 하루가 끝났습니다. 강제로 휴식합니다...");
                 Thread.Sleep(1000);
 
-                // 휴식 처리
-
+                Settings(); // 하루 리셋
 
                 Console.WriteLine("휴식을 취했습니다. 하루가 시작됩니다. (08:00)");
                 Thread.Sleep(1000);
+                return true; // 하루가 끝났음을 알림
             }
+
+            return false;
         }
 
         // 초기 설정
-        private void Init()
+        private void Settings()
         {
             player.ResetFatigue();                      // 피로도 0
             gameTime.AddDays();                         // 하루 증가
-            gameTime.SetTime(23, 0);                     // 시간 초기화 (테스트)
+            gameTime.SetTime(23, 0);                    // 시간 초기화 (테스트)
             shop.RefreshStock();                        // 상점 목록 리셋
             requestManager.GenerateDailyRequests(7);    // 일일 의뢰 추가
 
             // 만료된 의뢰가 있는지 확인 후 정리
             requestManager.CheckExpiredRequests(player.ArchiveRequests, gameTime);
+            currentScreen = GameScreen.InGame;
         }
 
         // 장비 제작/강화/수리 메뉴
@@ -304,13 +305,15 @@ namespace Smithy_Story
                     enhance.Enhance(inventory, weapons[num - 1]);
                     gameTime.AddMinutes(60);
                     player.IncreaseFatigue(8);
-                    Sleep();
                 }
                 else
                 {
                     Console.WriteLine("잘못된 입력입니다. 다시 입력해주세요.");
                     Thread.Sleep(800);
                 }
+
+                if (Sleep())
+                    return GameScreen.InGame; // 강제 종료 후 인게임으로 복귀
             }
         }
 
@@ -366,21 +369,21 @@ namespace Smithy_Story
                         weaponsToRepair[num - 1].Repair();
                         player.Money -= cost;
                         gameTime.AddMinutes(30);
-                        player.IncreaseFatigue(5);
-                        Sleep();
                     }
                     else
                     {
                         Console.WriteLine("돈이 부족합니다.");
                         Thread.Sleep(1000);
                     }
-                    return GameScreen.ForgeMenu;
                 }
                 else
                 {
                     Console.WriteLine("잘못된 입력입니다. 다시 입력해주세요.");
                     Thread.Sleep(800);
                 }
+
+                if (Sleep())
+                    return GameScreen.InGame; // 강제 종료 후 인게임으로 복귀
             }
         }
 
@@ -406,7 +409,6 @@ namespace Smithy_Story
                         shop.Buy(num, quantity, player, inventory);
                         gameTime.AddMinutes(15);
                         player.IncreaseFatigue(2);
-                        Sleep();
                     }
                     else
                     {
@@ -414,6 +416,9 @@ namespace Smithy_Story
                         Thread.Sleep(800);
                     }
                 }
+
+                if (Sleep())
+                    return GameScreen.InGame; // 강제 종료 후 인게임으로 복귀
             }
         }
 
@@ -438,14 +443,15 @@ namespace Smithy_Story
                     requestManager.AcceptRequest(num - 1, player);
                     gameTime.AddMinutes(180);
                     player.IncreaseFatigue(5);
-                    Sleep();
-                    return GameScreen.InGame;
                 }
                 else
                 {
                     Console.WriteLine("잘못된 입력입니다. 다시 시도해주세요.");
                     Thread.Sleep(800);
                 }
+
+                if (Sleep())
+                    return GameScreen.InGame; // 강제 종료 후 인게임으로 복귀
             }
         }
 
