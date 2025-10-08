@@ -74,6 +74,6 @@ namespace Smithy_Story
             
         }
 
-        public override string ToString() => $"이름: {Name}\t피로도: {Fatigue}/{MaxFatigue}\t돈: {Money}";
+        public override string ToString() => $"이름: {Name}\t피로도: {Fatigue}/{MaxFatigue}\t돈: {Money:N0}";
     }
 }

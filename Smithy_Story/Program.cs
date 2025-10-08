@@ -7,7 +7,7 @@ namespace Smithy_Story
 {
     // 화면 FSM
     public enum GameScreen
-    { 
+    {
         MainMenu,           // 메인 화면
         Explanation,        // 게임 설명
         ForgeMenu,          // 장비 제작/강화/수리 선택 화면
@@ -78,7 +78,7 @@ namespace Smithy_Story
                     case GameScreen.ForgeMenu:
                         currentScreen = ForgeMenual();
                         break;
-                    
+
                     // 제작
                     case GameScreen.Craft:
                         currentScreen = CraftWeapon(inventory);
@@ -87,6 +87,10 @@ namespace Smithy_Story
                     // 강화
                     case GameScreen.Enhance:
                         currentScreen = EnhanceWeapon(inventory);
+                        break;
+
+                    case GameScreen.Repair:
+                        currentScreen = RepairWeapon(inventory, player);
                         break;
 
                     // 일일 의뢰 목록 보기
@@ -101,7 +105,7 @@ namespace Smithy_Story
 
                     // 모든 무기 정보 만드는 법(레시피)
                     case GameScreen.WeaponMenu:
-                        ShowWeaponMenual();
+                        currentScreen = ShowWeaponMenual();
                         break;
 
                     // 인벤토리 보기
@@ -125,6 +129,73 @@ namespace Smithy_Story
                 }
             }
         }
+
+        // 장비 수리하기
+        public static GameScreen RepairWeapon(Inventory inventory, Player player)
+        {
+            Repair repair = new Repair(inventory);
+            bool open = true;
+            int num = 0;
+
+            while (open)
+            {
+                var weaponsToRepair = repair.RepairWeapons(inventory); // 인벤토리에 있는 장비 리스트
+                Console.Clear();
+                Console.WriteLine("========================== 수리 가능한 장비 ==========================");
+
+                if (weaponsToRepair.Count < 0)
+                {
+                    Console.WriteLine("강화 가능한 장비가 없습니다!");
+                }
+                else
+                {
+                    for (int i = 0; i < weaponsToRepair.Count; i++)
+                        Console.WriteLine($"{i + 1}. {weaponsToRepair[i].Name}\t현 내구도 [{weaponsToRepair[i].Durability}/{Weapon.MaxDurability}]");
+
+                    Console.WriteLine("======================================================================");
+                }
+
+                Console.WriteLine("어떤 장비를 수리하실 건가요?(뒤로 가기 0)");
+                var input = Console.ReadKey(true);
+
+                if (input.Key == ConsoleKey.D0 || input.Key == ConsoleKey.NumPad0)
+                    return GameScreen.ForgeMenu;
+
+                if (char.IsDigit(input.KeyChar))
+                    num = input.KeyChar - '0';
+
+                int repairCost = repair.CalculateRepairCost(weaponsToRepair[num - 1]);
+                // 장비 수리 시도
+                if (num > 0 && num <= weaponsToRepair.Count)
+                {
+                    Console.WriteLine($"해당 장비를 수리하시겠습니까? (Y / Any)\n수리비용: {repairCost}");
+                    var answer = Console.ReadKey(true);
+
+                    // 수락
+                    if (answer.Key.Equals(ConsoleKey.Y))
+                    {
+                        // 수리할 비용이 있는가?
+                        if (player.Money >= repairCost)
+                        {
+                            weaponsToRepair[num - 1].Repair();
+                            player.Money -= repairCost;
+                        }
+                        else
+                        {
+                            Console.WriteLine($"수리 비용이 부족합니다! (부족한 금액: {Math.Abs(player.Money - repairCost)}");
+                            return GameScreen.ForgeMenu;
+                        }
+                    }
+
+                    // 거절
+                    else
+                        return GameScreen.ForgeMenu;
+                }
+            }
+
+            return GameScreen.ForgeMenu;
+        }
+
         // 장비 강화하기
         public static GameScreen EnhanceWeapon(Inventory inventory)
         {
@@ -134,18 +205,18 @@ namespace Smithy_Story
 
             while (open)
             {
-                var enhancableWeapons = inventory.GetWeapon();      // 강화 가능한 장비 리스트
+                var weapons = inventory.GetWeapon();      // 인벤토리에 있는 장비 리스트
                 Console.Clear();
                 Console.WriteLine("========================== 강화 가능한 장비 ==========================");
 
-                if (enhancableWeapons.Count < 0)
+                if (weapons.Count < 0)
                 {
                     Console.WriteLine("강화 가능한 장비가 없습니다!");
                 }
                 else
                 {
-                    for (int i = 0; i < enhancableWeapons.Count; i++)
-                        Console.WriteLine($"{i + 1}. {enhancableWeapons[i].Name}");
+                    for (int i = 0; i < weapons.Count; i++)
+                        Console.WriteLine($"{i + 1}. {weapons[i].Name}");
 
                     Console.WriteLine("======================================================================");
                 }
@@ -160,8 +231,8 @@ namespace Smithy_Story
                     num = input.KeyChar - '0';
 
                 // 장비 강화 시도
-                if (num > 0)
-                    enhanceManager.Enhance(inventory, enhancableWeapons[num - 1]);
+                if (num > 0 && num <= weapons.Count)
+                    enhanceManager.Enhance(inventory, weapons[num - 1]);
             }
 
             return GameScreen.ForgeMenu;
@@ -180,10 +251,9 @@ namespace Smithy_Story
                 Console.Clear();
                 Console.WriteLine("========================== 제작 가능한 장비 ==========================");
 
-                if (craftableWeapons.Count < 0 )
+                if (craftableWeapons.Count < 0)
                 {
                     Console.WriteLine("제작 가능한 장비가 없습니다!");
-                    
                 }
                 else
                 {
@@ -203,7 +273,7 @@ namespace Smithy_Story
                     num = input.KeyChar - '0';
 
                 // 장비 제작 시도
-                if (num > 0)
+                if (num > 0 && num <= craftableWeapons.Count)
                     craft.CraftWeapon(craftableWeapons[num - 1]);
             }
 
@@ -237,7 +307,7 @@ namespace Smithy_Story
                     case ConsoleKey.D2:
                     case ConsoleKey.NumPad2:
                         return GameScreen.Enhance;
-                    
+
                     // 장비 수리
                     case ConsoleKey.D3:
                     case ConsoleKey.NumPad3:
@@ -280,7 +350,7 @@ namespace Smithy_Story
 
             return GameScreen.InGame;
         }
-        
+
         // 무기 레시피 보기
         public static GameScreen ShowWeaponMenual()
         {
@@ -291,8 +361,10 @@ namespace Smithy_Story
             {
                 foreach (var weapon in WeaponData.GetAll())
                 {
+                    Console.WriteLine($"[{weapon.Name}]");
                     foreach (var item in weapon.RequiredResources)
-                        Console.WriteLine($"{item.Key} : {item.Value}");
+                        Console.WriteLine($"- {item.Key.Name} : {item.Value}개");
+                    Console.WriteLine();
                 }
                 Console.WriteLine("===========================================");
                 Console.Write("뒤로 가려면 0번 키 입력: ");
@@ -322,11 +394,11 @@ namespace Smithy_Story
                 if (num == 0)
                     return GameScreen.InGame;
 
-               if (!shop.IsExistItemIdx(num - 1))
-               {
+                if (!shop.IsExistItemIdx(num - 1))
+                {
                     Console.WriteLine("잘못된 번호를 입력하셨습니다.");
                     continue;
-               }
+                }
 
                 Console.Write("\n구매하실 재료의 수량을 입력해주세요: ");
                 quantity = int.Parse(Console.ReadLine());
@@ -349,7 +421,7 @@ namespace Smithy_Story
             int num = 0;
             bool open = true;
             var requests = reqManager.GetDailyRequests();
-            
+
             while (open)
             {
                 Console.Clear();
@@ -391,7 +463,7 @@ namespace Smithy_Story
 
             return GameScreen.MainMenu;
         }
-        
+
 
         // 인벤토리 목록 보기
         public static GameScreen ShowInventory(UIManager uiManager)
@@ -422,7 +494,7 @@ namespace Smithy_Story
                           "4. 인벤토리 보기\n" +
                           "5. 오늘의 상점 이용하기\n" +
                           "6. 무기 레시피 보기\n";
-                            
+
             while (currentScreen == GameScreen.InGame)
             {
                 Console.Clear();
@@ -442,7 +514,7 @@ namespace Smithy_Story
                     //uiManager.ShowInventory();
                     case ConsoleKey.D3:
                         return GameScreen.ArchiveRequestMenu;
-                        //uiManager.ShowRequests();
+                    //uiManager.ShowRequests();
                     case ConsoleKey.D4:
                         return GameScreen.Inventory;
                     case ConsoleKey.D5:

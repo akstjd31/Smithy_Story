@@ -6,27 +6,41 @@ using System.Threading.Tasks;
 
 namespace Smithy_Story
 {
+    
     public class Weapon : IItem
     {
         // 상수
         const int MaxEnhanceLevel = 15;
+        public static readonly int MaxDurability = 100;
 
         // 변수
-        private int enhanceLevel;                               // 강화 수치
-        private int craftMinutes;                               // 제작 시간
+        private int enhanceLevel;   // 강화 수치
+        private int craftMinutes;   // 제작 시간
+        private int durability;     // 내구도
 
         // 프로퍼티
+        public int Durability
+        {
+            get => this.durability;
+            private set
+            {
+                if (value <= 0) this.durability = 0;
+                else if (value > MaxDurability) this.durability = MaxDurability;
+                else this.durability = value;
+            }
+        }
+
         public Dictionary<Resource, int> RequiredResources { get; private set; }
         public int ID { get; private set; }
         public string Name { get; private set; }                
         public int EnhanceLevel                         
         {
-            get => enhanceLevel;
+            get => this.enhanceLevel;
             private set
             {
-                if (value <= 1) enhanceLevel = 1;
-                else if (value > MaxEnhanceLevel) enhanceLevel = MaxEnhanceLevel;
-                else enhanceLevel = value;
+                if (value <= 1) this.enhanceLevel = 1;
+                else if (value > MaxEnhanceLevel) this.enhanceLevel = MaxEnhanceLevel;
+                else this.enhanceLevel = value;
             }
         }
 
@@ -47,13 +61,11 @@ namespace Smithy_Story
         public bool IsStackable => false;
         public Grade Grade { get; private set; }
 
-
-
         // 생성자
         // 무기는 무조건 개수 1 고정!!!!!!!!
         public Weapon(int id, string name, int price, Grade grade, int craftMinutes,
             Dictionary<Resource, int> requiredResources,
-            int quantity = 1, int enhanceLevel = 0)
+            int quantity = 1, int enhanceLevel = 0, int durability = 50)
         {
             ID = id;
             Name = name;
@@ -62,16 +74,34 @@ namespace Smithy_Story
             Quantity = quantity;
             this.craftMinutes = craftMinutes;
             this.enhanceLevel = enhanceLevel;
+            this.durability = durability;
             RequiredResources = requiredResources;
         }
 
         // 메소드
+        // 무기 레벨 업 (강화수치 업)
         public void LevelUp()
         {
             EnhanceLevel++;
         }
 
+        public void Repair()
+        {
+            Durability = MaxDurability;
+        }
+
+        // 현재 무기의 가치 (단순 재료비)
+        public double BaseValue()
+        {
+            double value = 0;
+
+            foreach (var resource in RequiredResources.Keys)
+                value += resource.Price * resource.Quantity;
+            
+            return value;
+        }
+
         // 출력문 재정의
-        public override string ToString() => $"[{ID}] {enhanceLevel}강 {Name}\t(등급: {Grade}, 가격: {Price})\n";
+        public override string ToString() => $"[{ID}] {EnhanceLevel}강 {Name}\t(등급: {Grade}, 가격: {Price})\t내구도 [{Durability}/{MaxDurability}]\n";
     }
 }

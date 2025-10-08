@@ -16,39 +16,39 @@ namespace Smithy_Story
         // 무기 강화
         public void Enhance(Inventory inventory, Weapon weapon)
         {
-            // 레벨 최고치에 이미 달성한 경우
             if (weapon.EnhanceLevel == MaxEnhanceLevel)
                 return;
 
             Random rand = new Random();
-            double randDouble = rand.NextDouble();  // 0.0 ~ 1.0
+            double randDouble = rand.NextDouble(); // 0.0 ~ 1.0
 
             Enhance enhance = EnhanceData.GetData(weapon.EnhanceLevel + 1);
 
             Console.WriteLine("강화 중...");
             Thread.Sleep(500);
 
-            // 성공
-            if (enhance.SuccessRate >= randDouble)
+            double success = enhance.SuccessRate;
+            double fail = enhance.FailRate;
+            double destroy = enhance.DestroyRate;
+
+            // 누적 확률 계산
+            if (randDouble < success)
             {
                 Console.WriteLine($"{weapon.Name} 강화에 성공했습니다! (현재 {weapon.EnhanceLevel}강)");
                 weapon.LevelUp();
-                Thread.Sleep(200);
             }
-
-            // 실패
-            else if (enhance.DestroyRate >= randDouble)
+            else if (randDouble < success + fail)
             {
                 Console.WriteLine($"{weapon.Name} 강화에 실패했습니다. (현재 {weapon.EnhanceLevel}강)");
-                Thread.Sleep(200);
             }
-
             else
             {
                 Console.WriteLine($"{weapon.Name}은(는) 파괴되었습니다.");
                 inventory.RemoveItem(weapon);
-                Thread.Sleep(200);
             }
+
+            Thread.Sleep(200);
         }
+
     }
 }
