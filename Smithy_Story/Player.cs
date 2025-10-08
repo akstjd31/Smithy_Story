@@ -61,10 +61,10 @@ namespace Smithy_Story
         public void ResetFatigue() => Fatigue = 0;
 
         // 의뢰 추가
-        public void AddRequest(Request req)
-        {
-            ArchiveRequests.Add(req);
-        }
+        public void AddRequest(Request req) => ArchiveRequests.Add(req);
+
+        // 보유 의뢰 개수 반환
+        public int GetRequestCount() => ArchiveRequests.Count;
 
         // 보유 중인 의뢰 출력
         public void ShowActiveReqeusts()

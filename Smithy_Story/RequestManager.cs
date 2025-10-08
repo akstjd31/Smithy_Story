@@ -11,6 +11,7 @@ namespace Smithy_Story
     {
         Start,
         CraftWeapon,    // 무기 제작
+        EnhanceWeapon,  // 무기 강화
         RepairWeapon,   // 무기 수리
         DeliverItem,    // 재료 전달
         End
@@ -50,7 +51,17 @@ namespace Smithy_Story
                 var index = rand.Next(allRequests.Count);
                 var baseReq = allRequests[index];
 
-                var clone = (Request)baseReq.Clone();                                // ID 붙여주기
+                var clone = (Request)baseReq.Clone();
+                clone.Reward = CalculateReward(baseReq);  // 미리 계산해 둔 보상 적용
+
+                // 수리 의뢰면 내구도 조정
+                if (clone.Type == RequestType.RepairWeapon)
+                {
+                    var durability = rand.Next(0, 100);
+                    Thread.Sleep(2000);
+                    (clone.Item as Weapon).SetDurability(durability);
+                }
+
                 dailyRequests.Add(clone);
             }
 
@@ -58,25 +69,32 @@ namespace Smithy_Story
         }
 
         // 의뢰 수락
-        public void AcceptRequest(int index, Player player)
+        public bool AcceptRequest(int index, Player player, Inventory inventory)
         {
             if (index < 0 || index >= dailyRequests.Count)
             {
                 Console.WriteLine("잘못된 의뢰 인덱스입니다.");
-                return;
+                return false;
             }
 
-            if (player.ArchiveRequests.Count >= MaxRequestCount)
+            if (player.GetRequestCount() >= MaxRequestCount)
             {
+                Console.Clear();
                 Console.WriteLine($"의뢰 수락 불가! 하루 최대 {MaxRequestCount}개까지 가능합니다.");
-                return;
+                Thread.Sleep(2000);
+                return false;
             }
 
-            var request = (Request)dailyRequests[index].Clone();
+            var request = (Request)dailyRequests[index].Clone();          // 아래 코드가 실행되도록 아이템을 집어넣기
             player.AddRequest(request);
             dailyRequests.RemoveAt(index);
 
-            Console.WriteLine($"[의뢰 수락] {request.Name}");
+            RequestType type = request.Type;
+            // 강화/수리 의뢰일 경우만 플레이어한테 맡기므로
+            if (request.Item != null && (type.Equals(RequestType.EnhanceWeapon) || type.Equals(RequestType.RepairWeapon)))
+                inventory.AddItem(request.Item);
+
+            return true;
         }
 
         // 의뢰 완료 처리
@@ -84,7 +102,9 @@ namespace Smithy_Story
         {
             if (player.ArchiveRequests.Remove(request))
             {
-                Console.WriteLine($"[의뢰 완료] {request.Name} — 보상: {request.Reward}G");
+                Thread.Sleep(3000);
+                Console.Clear();
+                Console.WriteLine($"[의뢰 완료] {request.Name} — 보상: {request.Reward}");
             }
             else
             {
@@ -113,8 +133,9 @@ namespace Smithy_Story
         }
 
         // 보상 계산 (아이템 등급과 수량에 따라 가중치 부여)
-        private int CalculateReward(IItem item, RequestType type, int neededCount)
+        private int CalculateReward(Request request)
         {
+            RequestType type = request.Type;
             int baseReward = 50;
 
             switch (type)
@@ -132,26 +153,29 @@ namespace Smithy_Story
 
             double gradeMultiplier = 1.0;
 
-            switch (item.Grade)
+            if (request.Item != null)
             {
-                case Grade.Common:
-                    gradeMultiplier = 1.0;
-                    break;
-                case Grade.Rare:
-                    gradeMultiplier = 1.5;
-                    break;
-                case Grade.Epic:
-                    gradeMultiplier = 2.5;
-                    break;
-                case Grade.Legendary:
-                    gradeMultiplier = 5.0;
-                    break;
-                default:
-                    gradeMultiplier = 1.0;
-                    break;
+                switch (request.Item.Grade)
+                {
+                    case Grade.Common:
+                        gradeMultiplier = 1.0;
+                        break;
+                    case Grade.Rare:
+                        gradeMultiplier = 1.5;
+                        break;
+                    case Grade.Epic:
+                        gradeMultiplier = 2.5;
+                        break;
+                    case Grade.Legendary:
+                        gradeMultiplier = 5.0;
+                        break;
+                    default:
+                        gradeMultiplier = 1.0;
+                        break;
+                }
             }
 
-            return (int)(baseReward * gradeMultiplier * neededCount);
+            return (int)(baseReward * gradeMultiplier * request.NeededCount);
         }
     }
 }

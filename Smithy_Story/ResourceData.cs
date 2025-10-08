@@ -17,13 +17,35 @@ namespace Smithy_Story
         // 생성자
         static ResourceData()
         {
-            manager.AddItem(new Resource(id: 1001, name: "돌",         price: 1,  grade: Grade.Common));
-            manager.AddItem(new Resource(id: 1002, name: "나무",       price: 2,  grade: Grade.Common));
-            manager.AddItem(new Resource(id: 1003, name: "금광석",     price: 8,  grade: Grade.Rare));
-            manager.AddItem(new Resource(id: 1004, name: "철", price: 5, grade: Grade.Epic));
-            manager.AddItem(new Resource(id: 1005, name: "실", price: 4, grade: Grade.Rare));
-            manager.AddItem(new Resource(id: 1006, name: "다이아몬드", price: 20, grade: Grade.Legendary));
+            // Common 1001 ~
+            manager.AddItem(new Resource(1001, "돌",   2, Grade.Common));
+            manager.AddItem(new Resource(1002, "나무", 4, Grade.Common));
+            manager.AddItem(new Resource(1003, "가죽", 6, Grade.Common));
+            manager.AddItem(new Resource(1004, "천",   8, Grade.Common));
+            manager.AddItem(new Resource(1005, "구리", 10, Grade.Common));
+
+            // Rare 2001 ~
+            manager.AddItem(new Resource(2001, "실",          15, Grade.Rare));
+            manager.AddItem(new Resource(2002, "철",          20, Grade.Rare));
+            manager.AddItem(new Resource(2003, "은광석",      25, Grade.Rare));
+            manager.AddItem(new Resource(2004, "금광석",      30, Grade.Rare));
+            manager.AddItem(new Resource(2005, "불의 정수",   35, Grade.Rare));
+            manager.AddItem(new Resource(2006, "얼음의 정수", 40, Grade.Rare));
+
+            // Epic 3001 ~
+            manager.AddItem(new Resource(3001, "수정",     50,  Grade.Epic));
+            manager.AddItem(new Resource(3002, "흑요석",   60,  Grade.Epic));
+            manager.AddItem(new Resource(3003, "루비",     75,  Grade.Epic));
+            manager.AddItem(new Resource(3004, "사파이어", 80,  Grade.Epic));
+            manager.AddItem(new Resource(3005, "에메랄드", 100, Grade.Epic));
+
+            // Legendary 4001 ~
+            manager.AddItem(new Resource(4001, "다이아몬드", 150, Grade.Legendary));
+            manager.AddItem(new Resource(4002, "용의 비늘",  200, Grade.Legendary));
+            manager.AddItem(new Resource(4003, "마력의 핵",  220, Grade.Legendary));
+            manager.AddItem(new Resource(4004, "고대 금속",  250, Grade.Legendary));
         }
+
 
         // 메소드
         public static Resource GetById(int id) => manager.GetById(id);

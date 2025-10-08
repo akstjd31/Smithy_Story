@@ -22,13 +22,13 @@ namespace Smithy_Story
         public string Name { get; private set; }                            // 의뢰 제목(?)
         public IItem Item { get; private set; }
         public int NeededCount { get; private set; }                        // 필요로 하는 갯수
-        public int Reward { get; private set; }
+        public int Reward { get; set; }
         public int DeadlineDay { get; private set; }
         public RequestStatus Status { get; set; } = RequestStatus.Pending;  // 의뢰 상태 (의뢰를 받았는지? 아님 거절했는지? 그런거)
         public RequestType Type { get; private set; }                       // 의뢰 종류 (제작, 재료 운반 등..)
 
         // 생성자
-        public Request(int id, string name, int reward, int deadlineDay, RequestType requestType, IItem item = null, int neededCount = 1)
+        public Request(int id, string name, int deadlineDay, RequestType requestType, IItem item = null, int reward = 0, int neededCount = 1)
         {
             ID = id;
             Name = name;
@@ -40,6 +40,11 @@ namespace Smithy_Story
         }
 
         // 메소드
+        // 아이템 세터
+        public void SetItem(IItem item)
+        {
+            Item = item;
+        }
         
         // 의뢰 실패 유무 확인
         public bool IsExpired(int day)
@@ -49,9 +54,12 @@ namespace Smithy_Story
 
         public object Clone()
         {
-            return new Request(ID, Name, Reward, DeadlineDay, Type)
-            {
-            };
+            var clone = (Request)MemberwiseClone();
+
+            if (Item != null)
+                clone.Item = (IItem)Item.Clone(); // 깊은 복사
+
+            return clone;
         }
 
         public override string ToString() =>  $"{Name}\n(보상: {Reward} 골드, 주어진 시간: {DeadlineDay} 일, 상태: {Status})";

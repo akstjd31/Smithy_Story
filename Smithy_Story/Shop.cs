@@ -10,10 +10,20 @@ namespace Smithy_Story
     {
         // 상수
         const int MaxDisplayItemCount = 5;  // 상점 진열 최대 갯수
+        const int MaxQuantity = 8;          // 재료 최대 갯수
+        const int MinQuantity = 2;          // 재료 최소 갯수
         // 변수
         private IItem[] stock;              // 구매 시 해당 위치는 빈칸으로 남아있는게 나아서 리스트말고 배열로 선언함.
         private Random rand;
 
+        // 등급별 확률 가중치
+        Dictionary<Grade, int> gradeWeights = new Dictionary<Grade, int>
+    {
+        { Grade.Common, 60 },
+        { Grade.Rare, 27 },
+        { Grade.Epic, 10 },
+        { Grade.Legendary, 3 } 
+    };
         // 생성자
         public Shop()
         {
@@ -32,19 +42,62 @@ namespace Smithy_Story
             // 전체 재료 목록 가져오기
             var resources = ResourceData.GetAll().ToList();
 
-            // 랜덤으로 5개(MaxDisplayItemCount) 선택
-            var randomSelection = resources
-                .OrderBy(x => rand.Next())
-                .Take(MaxDisplayItemCount)
-                .ToList();
+            // 등급별로 나누기
+            var groupedResources = resources.GroupBy(r => r.Grade)
+                                            .ToDictionary(g => g.Key, g => g.ToList());
 
-            // 배열에 하나씩 채워 넣기
-            for (int i = 0; i < randomSelection.Count; i++)
+            // 상점에 표시할 아이템 목록
+            List<Resource> selected = new List<Resource>();
+
+            for (int i = 0; i < MaxDisplayItemCount; i++)
             {
-                randomSelection[i].Quantity = 5;    // 임시
-                stock[i] = randomSelection[i];
+                Grade selectedGrade = GetRandomGrade(gradeWeights);
+
+                // 해당 등급에 포함된 재료들
+                if (groupedResources.ContainsKey(selectedGrade))
+                {
+                    var list = groupedResources[selectedGrade];
+                    var item = list[rand.Next(list.Count)];
+
+                    // 복사본 생성 및 수량 뽑기
+                    Resource newItem = new Resource(item.ID, item.Name, item.Price, item.Grade);
+                    newItem.Quantity = rand.Next(MinQuantity, MaxQuantity+1);   // 2 ~ 8
+
+                    selected.Add(newItem);
+                }
+                //else
+                //{
+                //    // 해당 등급에 자원이 없으면 Common으로 대체
+                //    var fallbackList = groupedResources[Grade.Common];
+                //    var fallback = fallbackList[rand.Next(fallbackList.Count)];
+                //    Resource newItem = new Resource(fallback.ID, fallback.Name, fallback.Price, fallback.Grade);
+                //    newItem.Quantity = rand.Next(3, 8);
+                //    selected.Add(newItem);
+                //}
             }
+
+            // 배열에 적용
+            for (int i = 0; i < selected.Count; i++)
+                stock[i] = selected[i];
         }
+
+
+        // 등급 뽑기
+        private Grade GetRandomGrade(Dictionary<Grade, int> weights)
+        {
+            int roll = rand.Next(1, 101);
+
+            int cumulative = 0;
+            foreach (var kvp in weights)
+            {
+                cumulative += kvp.Value;
+                if (roll <= cumulative)
+                    return kvp.Key;
+            }
+
+            return Grade.Common; // 기본값
+        }
+
 
 
         public void ShowStock()
@@ -70,7 +123,7 @@ namespace Smithy_Story
         public bool IsExistItemQuantity(int idx, int quantity) => quantity > 0 && (quantity <= stock[idx].Quantity) ? true : false;
 
         // 구매 할 번호 - 1 == 인덱스, 수량, 플레이어
-        public void Buy(int num, int quantity, Player player, Inventory inventory)
+        public bool Buy(int num, int quantity, Player player, Inventory inventory)
         {
             int idx = num - 1;
 
@@ -78,20 +131,13 @@ namespace Smithy_Story
             if (quantity < 1 || quantity > stock[idx].Quantity)
             {
                 Console.WriteLine($"구매하려는 [{stock[idx].Name}]의 수량이 부족하거나 1 이상의 숫자를 입력해주세요.");
-                return;
+                return false;
             }
 
             // 구매하려는 플레이어의 보유 금액이 부족할 때
             int totalPrice = stock[idx].Price * quantity;
             if (player.Money >= totalPrice)
             {
-                // 인벤에 추가
-                //var Item = new Resource(
-                //    stock[idx].ID,
-                //    stock[idx].Name,
-                //    stock[idx].Price,
-                //    stock[idx].Grade
-                //    );
                 var item = (Resource)stock[idx].Clone();
                 inventory.AddItem(item, quantity);
 
@@ -104,10 +150,13 @@ namespace Smithy_Story
                 // 해당 물품의 수량이 없다면 null 처리
                 if (stock[idx].Quantity <= 0)
                     stock[idx] = null;
+
+                return true;
             }
             else
             {
                 Console.WriteLine(player.Name + "님의 골드가 부족합니다!");
+                return false;
             }
         }
     }

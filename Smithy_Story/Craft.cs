@@ -39,10 +39,10 @@ namespace Smithy_Story
             return craftableWeapons;
         }
 
-        public void CraftWeapon(Weapon weapon)
+        public bool CraftWeapon(Weapon weapon)
         {
             if (weapon == null)
-                return;
+                return false;
 
             foreach (var reqResource in weapon.RequiredResources)
             {
@@ -61,10 +61,13 @@ namespace Smithy_Story
             }
 
             Console.WriteLine($"{weapon.Name} 제작 중...");
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
 
             inventory.AddItem(weapon);
             Console.WriteLine($"{weapon.Name} 제작 완료!");
+            Thread.Sleep(2000);
+
+            return true;
         }
     }
 }

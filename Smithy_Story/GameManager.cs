@@ -264,16 +264,22 @@ namespace Smithy_Story
 
                 if (int.TryParse(input, out int num) && num > 0 && num <= craftable.Count)
                 {
-                    craft.CraftWeapon(craftable[num - 1]);
-                    gameTime.AddMinutes(120);
-                    player.IncreaseFatigue(10);
-                    Sleep();
+                    bool tryCraft = craft.CraftWeapon(craftable[num - 1]);
+                    if (tryCraft)
+                    {
+                        gameTime.AddMinutes(120);
+                        player.IncreaseFatigue(10);
+                    }
                 }
                 else
                 {
                     Console.WriteLine("잘못된 입력입니다. 다시 입력해주세요.");
                     Thread.Sleep(800);
                 }
+
+                if (Sleep())
+                    return GameScreen.InGame;
+
             }
         }
         
@@ -302,14 +308,17 @@ namespace Smithy_Story
 
                 if (int.TryParse(input, out int num) && num > 0 && num <= weapons.Count)
                 {
-                    enhance.Enhance(inventory, weapons[num - 1]);
-                    gameTime.AddMinutes(60);
-                    player.IncreaseFatigue(8);
+                    bool tryEnhance = enhance.Enhance(inventory, weapons[num - 1]);
+                    if (tryEnhance)
+                    {
+                        gameTime.AddMinutes(60);
+                        player.IncreaseFatigue(8);
+                    }
                 }
                 else
                 {
                     Console.WriteLine("잘못된 입력입니다. 다시 입력해주세요.");
-                    Thread.Sleep(800);
+                    Thread.Sleep(1000);
                 }
 
                 if (Sleep())
@@ -340,16 +349,17 @@ namespace Smithy_Story
         private GameScreen RepairWeapon()
         {
             Repair repair = new Repair(inventory);
-            var weaponsToRepair = repair.RepairWeapons(inventory);
-            if (!weaponsToRepair.Any())
-            {
-                Console.WriteLine("수리 가능한 장비가 없습니다.");
-                Thread.Sleep(1000);
-                return GameScreen.ForgeMenu;
-            }
 
             while (true)
             {
+                var weaponsToRepair = repair.RepairWeapons(inventory);
+                if (!weaponsToRepair.Any())
+                {
+                    Console.WriteLine("수리 가능한 장비가 없습니다.");
+                    Thread.Sleep(1000);
+                    return GameScreen.ForgeMenu;
+                }
+
                 Console.Clear();
                 Console.WriteLine("수리 가능한 장비 목록:");
                 for (int i = 0; i < weaponsToRepair.Count; i++)
@@ -406,9 +416,12 @@ namespace Smithy_Story
                     string qInput = Console.ReadLine();
                     if (int.TryParse(qInput, out int quantity) && quantity > 0)
                     {
-                        shop.Buy(num, quantity, player, inventory);
-                        gameTime.AddMinutes(15);
-                        player.IncreaseFatigue(2);
+                        bool tryBuy = shop.Buy(num, quantity, player, inventory);
+                        if (tryBuy)
+                        {
+                            gameTime.AddMinutes(15);
+                            player.IncreaseFatigue(2);
+                        }
                     }
                     else
                     {
@@ -440,9 +453,13 @@ namespace Smithy_Story
 
                 if (int.TryParse(input, out int num) && num > 0 && num <= requests.Count)
                 {
-                    requestManager.AcceptRequest(num - 1, player);
-                    gameTime.AddMinutes(120);
-                    player.IncreaseFatigue(5);
+                    bool isAccept = requestManager.AcceptRequest(num - 1, player, inventory);
+
+                    if (isAccept)
+                    {
+                        gameTime.AddMinutes(120);
+                        player.IncreaseFatigue(5);
+                    }
                 }
                 else
                 {

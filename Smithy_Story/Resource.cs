@@ -38,9 +38,8 @@ namespace Smithy_Story
         // 메소드
         public object Clone()
         {
-            return new Resource(ID, Name, Price, Grade)
-            {
-            };
+            var clone = (Resource)MemberwiseClone();
+            return clone;
         }
 
         // 출력문 재정의

@@ -16,19 +16,9 @@ namespace Smithy_Story
         // 변수
         private int enhanceLevel;   // 강화 수치
         private int craftMinutes;   // 제작 시간
-        private int durability;     // 내구도
 
         // 프로퍼티
-        public int Durability
-        {
-            get => this.durability;
-            private set
-            {
-                if (value <= 0) this.durability = 0;
-                else if (value > MaxDurability) this.durability = MaxDurability;
-                else this.durability = value;
-            }
-        }
+        public int Durability { get; private set; }
 
         public Dictionary<Resource, int> RequiredResources { get; private set; }
         public int ID { get; private set; }
@@ -74,21 +64,20 @@ namespace Smithy_Story
             Quantity = quantity;
             this.craftMinutes = craftMinutes;
             this.enhanceLevel = enhanceLevel;
-            this.durability = durability;
+            Durability = durability;
             RequiredResources = requiredResources;
         }
 
         // 메소드
         // 무기 레벨 업 (강화수치 업)
-        public void LevelUp()
-        {
-            EnhanceLevel++;
-        }
+        public void LevelUp() => EnhanceLevel++;
 
-        public void Repair()
-        {
-            Durability = MaxDurability;
-        }
+        // 수리
+        public void Repair() => Durability = MaxDurability;
+
+        //
+        public void SetDurability(int durability) => Durability = durability;
+
 
         // 현재 무기의 가치 (단순 재료비)
         public double BaseValue()
@@ -103,9 +92,8 @@ namespace Smithy_Story
 
         public object Clone()
         {
-            return new Resource(ID, Name, Price, Grade)
-            {
-            };
+            var clone = (Weapon)MemberwiseClone();
+            return clone;
         }
 
         // 출력문 재정의
