@@ -9,7 +9,7 @@ public enum Grade
     Common, Rare, Epic, Legendary
 }
 
-public interface IItem
+public interface IItem : ICloneable
 {
     int ID { get; }
     string Name { get; }

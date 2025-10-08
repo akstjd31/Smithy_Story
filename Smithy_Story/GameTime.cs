@@ -28,7 +28,7 @@ namespace Smithy_Story
         // 생성자
         public GameTime()
         {
-            day = -1;   // 초기 GameManager에서 Init 해주고 시작하기 때문에 -1
+            day = 0;
             hour = 8;
             minute = 0;
         }
@@ -73,6 +73,6 @@ namespace Smithy_Story
         }
 
         // 출력 ?일 ??:??
-        public override string ToString() => $"Day {day}, {hour:D2}:{minute:D2}";
+        public override string ToString() => $"[Day {day}]\t{hour:D2}:{minute:D2}";
     }
 }

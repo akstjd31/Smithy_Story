@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Smithy_Story
 {
     
-    public class Weapon : IItem
+    public class Weapon : IItem, ICloneable
     {
         // 상수
         const int MaxEnhanceLevel = 15;
@@ -99,6 +99,13 @@ namespace Smithy_Story
                 value += resource.Price * resource.Quantity;
             
             return value;
+        }
+
+        public object Clone()
+        {
+            return new Resource(ID, Name, Price, Grade)
+            {
+            };
         }
 
         // 출력문 재정의

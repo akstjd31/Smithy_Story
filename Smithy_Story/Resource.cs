@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Smithy_Story
 {
-    public class Resource : IItem
+    public class Resource : IItem, ICloneable
     {
         // 상수
         //const int Max_Quantity = 10;    // 최대 개수 (인벤토리 한 칸 기준)
@@ -26,7 +26,7 @@ namespace Smithy_Story
         public Grade Grade { get; private set; }
 
         // 생성자
-        public Resource(int id, string name, int price, Grade grade, int quantity = 5)  // 수량 = 임시
+        public Resource(int id, string name, int price, Grade grade, int quantity = 1)
         {
             ID = id;
             Name = name;
@@ -36,6 +36,12 @@ namespace Smithy_Story
         }
 
         // 메소드
+        public object Clone()
+        {
+            return new Resource(ID, Name, Price, Grade)
+            {
+            };
+        }
 
         // 출력문 재정의
         public override string ToString() => $"[{ID}] {Name}\t(개수: {Quantity}개, 개당 가격: {Price}, 등급: {Grade})\n";

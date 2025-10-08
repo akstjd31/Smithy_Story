@@ -41,6 +41,7 @@ namespace Smithy_Story
             // 배열에 하나씩 채워 넣기
             for (int i = 0; i < randomSelection.Count; i++)
             {
+                randomSelection[i].Quantity = 5;    // 임시
                 stock[i] = randomSelection[i];
             }
         }
@@ -73,29 +74,35 @@ namespace Smithy_Story
         {
             int idx = num - 1;
 
-            var item = stock[idx];
-
             // 수량 입력이 잘못 들어왔을 경우
-            if (quantity < 1 || quantity > item.Quantity)
+            if (quantity < 1 || quantity > stock[idx].Quantity)
             {
                 Console.WriteLine($"구매하려는 [{stock[idx].Name}]의 수량이 부족하거나 1 이상의 숫자를 입력해주세요.");
                 return;
             }
 
             // 구매하려는 플레이어의 보유 금액이 부족할 때
-            int totalPrice = item.Price * quantity;
+            int totalPrice = stock[idx].Price * quantity;
             if (player.Money >= totalPrice)
             {
                 // 인벤에 추가
+                //var Item = new Resource(
+                //    stock[idx].ID,
+                //    stock[idx].Name,
+                //    stock[idx].Price,
+                //    stock[idx].Grade
+                //    );
+                var item = (Resource)stock[idx].Clone();
                 inventory.AddItem(item, quantity);
 
                 // 플레이어 소비, 상점 개수 변동
                 player.Money -= totalPrice;
+                stock[idx].Quantity -= quantity;
 
-                Console.WriteLine($"{item.Name}을(를) {quantity}만큼 구매했습니다!");
+                Console.WriteLine($"{stock[idx].Name}을(를) {quantity}만큼 구매했습니다!");
 
                 // 해당 물품의 수량이 없다면 null 처리
-                if (stock[idx].Quantity - quantity <= 0)
+                if (stock[idx].Quantity <= 0)
                     stock[idx] = null;
             }
             else

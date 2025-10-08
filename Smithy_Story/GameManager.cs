@@ -134,8 +134,9 @@ namespace Smithy_Story
             while (true)
             {
                 Console.Clear();
-                uiManager.UpdatePlayerUI();
                 uiManager.UpdateTimeUI();
+                uiManager.UpdatePlayerUI();
+                Console.WriteLine("================================================================");
 
                 Console.WriteLine("1. 장비 제작/강화/수리");
                 Console.WriteLine("2. 오늘의 의뢰 확인");
@@ -198,7 +199,7 @@ namespace Smithy_Story
         {
             player.ResetFatigue();                      // 피로도 0
             gameTime.AddDays();                         // 하루 증가
-            gameTime.SetTime(8, 0);                     // 시간 초기화
+            gameTime.SetTime(23, 0);                     // 시간 초기화 (테스트)
             shop.RefreshStock();                        // 상점 목록 리셋
             requestManager.GenerateDailyRequests(7);    // 일일 의뢰 추가
 

@@ -22,7 +22,7 @@ namespace Smithy_Story
         // UI 출력문 작성
         public void Update()
         {
-
+            Console.Write(gameTime.ToString() + "\t\t");
         }
     }
 }
