@@ -42,11 +42,12 @@ namespace Smithy_Story
             shop = new Shop();
             uiManager = new UIManager(player, inventory, gameTime, requestManager, shop);
 
-            requestManager.GenerateDailyRequests(7);
-
             currentScreen = GameScreen.MainMenu;
+
+            Init(); // 초기 세팅
         }
 
+        // 게임 구동시키기
         public void Run()
         {
             while (currentScreen != GameScreen.Exit)
@@ -71,6 +72,9 @@ namespace Smithy_Story
                     case GameScreen.Repair:
                         currentScreen = RepairWeapon();
                         break;
+                    case GameScreen.Inventory:
+                        currentScreen = ShowInventory();
+                        break;
                     case GameScreen.Shop:
                         currentScreen = ShowShop();
                         break;
@@ -90,6 +94,7 @@ namespace Smithy_Story
             }
         }
 
+        // 메인 메뉴
         private GameScreen ShowMainMenu()
         {
             while (true)
@@ -123,6 +128,7 @@ namespace Smithy_Story
             }
         }
 
+        // 인 게임
         private GameScreen ShowInGameMenu()
         {
             while (true)
@@ -168,6 +174,39 @@ namespace Smithy_Story
             }
         }
 
+        // 휴식 시점 체크 (풀 피로도, 시간 초과)
+        private bool NeedsRest() => player.Fatigue >= Player.MaxFatigue || gameTime.Hour >= 24;
+
+        // 자야됨.
+        private void Sleep()
+        {
+            if (NeedsRest())
+            {
+                Console.WriteLine("\n피로가 누적되었거나 하루가 끝났습니다. 강제로 휴식합니다...");
+                Thread.Sleep(1000);
+
+                // 휴식 처리
+
+
+                Console.WriteLine("휴식을 취했습니다. 하루가 시작됩니다. (08:00)");
+                Thread.Sleep(1000);
+            }
+        }
+
+        // 초기 설정
+        private void Init()
+        {
+            player.ResetFatigue();                      // 피로도 0
+            gameTime.AddDays();                         // 하루 증가
+            gameTime.SetTime(8, 0);                     // 시간 초기화
+            shop.RefreshStock();                        // 상점 목록 리셋
+            requestManager.GenerateDailyRequests(7);    // 일일 의뢰 추가
+
+            // 만료된 의뢰가 있는지 확인 후 정리
+            requestManager.CheckExpiredRequests(player.ArchiveRequests, gameTime);
+        }
+
+        // 장비 제작/강화/수리 메뉴
         private GameScreen ForgeMenu()
         {
             while (true)
@@ -196,21 +235,23 @@ namespace Smithy_Story
             }
         }
 
+        // 무기 만들기
         private GameScreen CraftWeapon()
         {
             Craft craft = new Craft(inventory);
-            var craftable = craft.GetCraftableWeapon();
-
-            if (!craftable.Any())
-            {
-                Console.WriteLine("제작 가능한 무기가 없습니다.");
-                Thread.Sleep(1000);
-                return GameScreen.ForgeMenu;
-            }
 
             while (true)
             {
                 Console.Clear();
+                var craftable = craft.GetCraftableWeapon();
+
+                if (!craftable.Any())
+                {
+                    Console.WriteLine("제작 가능한 무기가 없습니다.");
+                    Thread.Sleep(1000);
+                    return GameScreen.ForgeMenu;
+                }
+
                 Console.WriteLine("제작 가능한 무기 목록:");
                 for (int i = 0; i < craftable.Count; i++)
                     Console.WriteLine($"{i + 1}. {craftable[i].Name}");
@@ -224,7 +265,7 @@ namespace Smithy_Story
                     craft.CraftWeapon(craftable[num - 1]);
                     gameTime.AddMinutes(120);
                     player.IncreaseFatigue(10);
-                    return GameScreen.ForgeMenu;
+                    Sleep();
                 }
                 else
                 {
@@ -233,7 +274,8 @@ namespace Smithy_Story
                 }
             }
         }
-
+        
+        // 무기 강화하기
         private GameScreen EnhanceWeapon()
         {
             EnhanceManager enhance = new EnhanceManager();
@@ -261,7 +303,7 @@ namespace Smithy_Story
                     enhance.Enhance(inventory, weapons[num - 1]);
                     gameTime.AddMinutes(60);
                     player.IncreaseFatigue(8);
-                    return GameScreen.ForgeMenu;
+                    Sleep();
                 }
                 else
                 {
@@ -271,6 +313,26 @@ namespace Smithy_Story
             }
         }
 
+        // 인벤토리 보기
+        public GameScreen ShowInventory()
+        {
+            bool open = true;
+
+            while (open)
+            {
+                Console.Clear();
+                uiManager.UpdateInventoryUI();
+                Console.Write("뒤로 가려면 0번 키 입력: ");
+                string input = Console.ReadLine();
+
+                if (input == "0")
+                    return GameScreen.InGame;
+            }
+
+            return GameScreen.InGame;
+        }
+
+        // 무기 수리하기
         private GameScreen RepairWeapon()
         {
             Repair repair = new Repair(inventory);
@@ -291,7 +353,9 @@ namespace Smithy_Story
                 Console.Write("선택 (뒤로가기 0): ");
 
                 string input = Console.ReadLine();
-                if (input == "0") return GameScreen.ForgeMenu;
+
+                if (input == "0")
+                    return GameScreen.ForgeMenu;
 
                 if (int.TryParse(input, out int num) && num > 0 && num <= weaponsToRepair.Count)
                 {
@@ -302,6 +366,7 @@ namespace Smithy_Story
                         player.Money -= cost;
                         gameTime.AddMinutes(30);
                         player.IncreaseFatigue(5);
+                        Sleep();
                     }
                     else
                     {
@@ -318,17 +383,18 @@ namespace Smithy_Story
             }
         }
 
+        // 상점
         private GameScreen ShowShop()
         {
-            shop.RefreshStock();
-
             while (true)
             {
                 shop.ShowStock();
 
                 Console.Write("구매할 아이템 번호 (뒤로가기 0): ");
                 string input = Console.ReadLine();
-                if (input == "0") return GameScreen.InGame;
+
+                if (input == "0")
+                    return GameScreen.InGame;
 
                 if (int.TryParse(input, out int num) && num > 0 && num <= shop.GetStockLength())
                 {
@@ -339,31 +405,39 @@ namespace Smithy_Story
                         shop.Buy(num, quantity, player, inventory);
                         gameTime.AddMinutes(15);
                         player.IncreaseFatigue(2);
-                        return GameScreen.InGame;
+                        Sleep();
+                    }
+                    else
+                    {
+                        Console.WriteLine("잘못된 입력입니다. 다시 시도해주세요.");
+                        Thread.Sleep(800);
                     }
                 }
-
-                Console.WriteLine("잘못된 입력입니다. 다시 시도해주세요.");
-                Thread.Sleep(800);
             }
         }
 
+        // 일일 의뢰
         private GameScreen ShowDailyRequests()
         {
             var requests = requestManager.GetDailyRequests();
-            uiManager.UpdateDailyRequestUI();
 
             while (true)
             {
+                Console.Clear();
+                uiManager.UpdateDailyRequestUI();
+
                 Console.Write("수락할 의뢰 번호 (뒤로가기 0): ");
                 string input = Console.ReadLine();
-                if (input == "0") return GameScreen.InGame;
+
+                if (input == "0")
+                    return GameScreen.InGame;
 
                 if (int.TryParse(input, out int num) && num > 0 && num <= requests.Count)
                 {
                     requestManager.AcceptRequest(num - 1, player);
                     gameTime.AddMinutes(180);
                     player.IncreaseFatigue(5);
+                    Sleep();
                     return GameScreen.InGame;
                 }
                 else
@@ -374,6 +448,7 @@ namespace Smithy_Story
             }
         }
 
+        // 수락한 의뢰
         private GameScreen ShowAcceptedRequests()
         {
             player.ShowActiveReqeusts();
@@ -382,6 +457,7 @@ namespace Smithy_Story
             return GameScreen.InGame;
         }
 
+        // 무기 전체 리스트 보기 (제작에 필요한 재료 확인용)
         private GameScreen ShowWeaponManual()
         {
             Console.Clear();
@@ -397,6 +473,7 @@ namespace Smithy_Story
             return GameScreen.InGame;
         }
 
+        // 설명
         private GameScreen ShowExplanation()
         {
             Console.WriteLine("게임 설명...");

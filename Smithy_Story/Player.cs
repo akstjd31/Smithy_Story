@@ -9,7 +9,7 @@ namespace Smithy_Story
     public class Player
     {
         // 상수
-        const int MaxFatigue = 100; // 최대 피로도
+        public static readonly int MaxFatigue = 100; // 최대 피로도
 
         // 변수
         private string name;
@@ -81,7 +81,6 @@ namespace Smithy_Story
             Console.WriteLine(this.name + "의 의뢰 목록");
             foreach (var request in this.archiveRequests)
                 Console.WriteLine("- " + request.Title);
-            
         }
 
         public override string ToString() => $"이름: {Name}\t피로도: {Fatigue}/{MaxFatigue}\t돈: {Money:N0}";

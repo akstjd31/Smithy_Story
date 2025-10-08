@@ -28,7 +28,7 @@ namespace Smithy_Story
         // 생성자
         public GameTime()
         {
-            day = 0;
+            day = -1;   // 초기 GameManager에서 Init 해주고 시작하기 때문에 -1
             hour = 8;
             minute = 0;
         }
@@ -63,7 +63,14 @@ namespace Smithy_Story
         }
 
         // 일 추가 메소드
-        public void AddDays(int days) => this.day += days;
+        public void AddDays() => this.day++;
+
+        // 시간 초기화
+        public void SetTime(int hour, int minute)
+        {
+            this.hour = hour;
+            this.minute = minute;
+        }
 
         // 출력 ?일 ??:??
         public override string ToString() => $"Day {day}, {hour:D2}:{minute:D2}";
