@@ -16,8 +16,6 @@ namespace Smithy_Story
         private int fatigue;                    // 피로도
         private int money;                      // 자산
 
-        private List<Request> archiveRequests;  // 수락한 의뢰 목록
-
         // 프로퍼티
         public string Name
         {
@@ -49,8 +47,6 @@ namespace Smithy_Story
             this.name = name;
             this.fatigue = fatigue;
             this.money = money;
-
-            archiveRequests = new List<Request>();
         }
 
         // 메소드
@@ -64,18 +60,27 @@ namespace Smithy_Story
         // 피로도 초기화 (하루가 지났을 때)
         public void ResetFatigue() => Fatigue = 0;
 
+        // 의뢰 추가
+        public void AddRequest(Request req)
+        {
+            ArchiveRequests.Add(req);
+        }
+
         // 보유 중인 의뢰 출력
         public void ShowActiveReqeusts()
         {
-            if (!this.archiveRequests.Any())
+            Console.Clear();
+            if (!ArchiveRequests.Any())
             {
                 Console.WriteLine("현재 진행 중인 의뢰가 없습니다.");
                 return;
             }
 
             Console.WriteLine(this.name + "의 의뢰 목록");
-            foreach (var request in this.archiveRequests)
+            Console.WriteLine("=================================================");
+            foreach (var request in ArchiveRequests)
                 Console.WriteLine("- " + request.Title);
+            Console.WriteLine();
         }
 
         public override string ToString() => $"이름: {Name}\t피로도: {Fatigue}/{MaxFatigue}\t돈: {Money:N0}";

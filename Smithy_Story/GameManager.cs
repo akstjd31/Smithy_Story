@@ -186,7 +186,7 @@ namespace Smithy_Story
 
                 Settings(); // 하루 리셋
 
-                Console.WriteLine("휴식을 취했습니다. 하루가 시작됩니다. (08:00)");
+                Console.WriteLine("휴식을 취했습니다. 하루가 시작됩니다.");
                 Thread.Sleep(1000);
                 return true; // 하루가 끝났음을 알림
             }
@@ -199,7 +199,7 @@ namespace Smithy_Story
         {
             player.ResetFatigue();                      // 피로도 0
             gameTime.AddDays();                         // 하루 증가
-            gameTime.SetTime(23, 0);                    // 시간 초기화 (테스트)
+            gameTime.SetTime(8, 0);                    // 시간 초기화 (테스트)
             shop.RefreshStock();                        // 상점 목록 리셋
             requestManager.GenerateDailyRequests(7);    // 일일 의뢰 추가
 
@@ -441,7 +441,7 @@ namespace Smithy_Story
                 if (int.TryParse(input, out int num) && num > 0 && num <= requests.Count)
                 {
                     requestManager.AcceptRequest(num - 1, player);
-                    gameTime.AddMinutes(180);
+                    gameTime.AddMinutes(120);
                     player.IncreaseFatigue(5);
                 }
                 else

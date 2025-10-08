@@ -43,8 +43,9 @@ namespace Smithy_Story
                 return;
             }
 
-            player.ArchiveRequests.Add(dailyRequests[idx]);
-            Console.WriteLine(dailyRequests[idx].Title + " 새로운 의뢰 수락!");
+            var request = (Request)dailyRequests[idx].Clone();
+            player.AddRequest(request);
+            Console.WriteLine(request.Title + " 새로운 의뢰 수락!");
             dailyRequests.RemoveAt(idx);
         }
 
