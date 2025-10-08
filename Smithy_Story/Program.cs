@@ -74,13 +74,19 @@ namespace Smithy_Story
                         currentScreen = ShowInGame(currentScreen, player, inventory, requestManager, gameTime, uiManager);
                         break;
 
-                    // 장비 제작/강화/수리
+                    // 장비 제작/강화/수리 메뉴
                     case GameScreen.ForgeMenu:
                         currentScreen = ForgeMenual();
                         break;
-
+                    
+                    // 제작
                     case GameScreen.Craft:
                         currentScreen = CraftWeapon(inventory);
+                        break;
+
+                    // 강화
+                    case GameScreen.Enhance:
+                        currentScreen = EnhanceWeapon(inventory);
                         break;
 
                     // 일일 의뢰 목록 보기
@@ -119,16 +125,58 @@ namespace Smithy_Story
                 }
             }
         }
-        
-        public static GameScreen CraftWeapon(Inventory inventory)
+        // 장비 강화하기
+        public static GameScreen EnhanceWeapon(Inventory inventory)
         {
-            Craft craft = new Craft(inventory);                 // 작업대 생성
+            EnhanceManager enhanceManager = new EnhanceManager();
             bool open = true;
             int num = 0;
 
             while (open)
             {
-                var craftableWeapons = craft.GetCraftableWeapon();
+                var enhancableWeapons = inventory.GetWeapon();      // 강화 가능한 장비 리스트
+                Console.Clear();
+                Console.WriteLine("========================== 강화 가능한 장비 ==========================");
+
+                if (enhancableWeapons.Count < 0)
+                {
+                    Console.WriteLine("강화 가능한 장비가 없습니다!");
+                }
+                else
+                {
+                    for (int i = 0; i < enhancableWeapons.Count; i++)
+                        Console.WriteLine($"{i + 1}. {enhancableWeapons[i].Name}");
+
+                    Console.WriteLine("======================================================================");
+                }
+
+                Console.WriteLine("어떤 장비를 강화하실 건가요?(뒤로 가기 0)");
+                var input = Console.ReadKey(true);
+
+                if (input.Key == ConsoleKey.D0 || input.Key == ConsoleKey.NumPad0)
+                    return GameScreen.ForgeMenu;
+
+                if (char.IsDigit(input.KeyChar))
+                    num = input.KeyChar - '0';
+
+                // 장비 강화 시도
+                if (num > 0)
+                    enhanceManager.Enhance(inventory, enhancableWeapons[num - 1]);
+            }
+
+            return GameScreen.ForgeMenu;
+        }
+
+        // 장비 제작하기
+        public static GameScreen CraftWeapon(Inventory inventory)
+        {
+            Craft craft = new Craft(inventory);                     // 작업대 생성
+            bool open = true;
+            int num = 0;
+
+            while (open)
+            {
+                var craftableWeapons = craft.GetCraftableWeapon();  // 제작 가능한 장비 리스트
                 Console.Clear();
                 Console.WriteLine("========================== 제작 가능한 장비 ==========================");
 
@@ -154,6 +202,7 @@ namespace Smithy_Story
                 if (char.IsDigit(input.KeyChar))
                     num = input.KeyChar - '0';
 
+                // 장비 제작 시도
                 if (num > 0)
                     craft.CraftWeapon(craftableWeapons[num - 1]);
             }

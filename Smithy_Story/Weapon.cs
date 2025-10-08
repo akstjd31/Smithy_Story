@@ -66,6 +66,11 @@ namespace Smithy_Story
         }
 
         // 메소드
+        public void LevelUp()
+        {
+            EnhanceLevel++;
+        }
+
         // 출력문 재정의
         public override string ToString() => $"[{ID}] {enhanceLevel}강 {Name}\t(등급: {Grade}, 가격: {Price})\n";
     }

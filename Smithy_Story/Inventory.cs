@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +13,9 @@ namespace Smithy_Story
         private List<IItem> items = new List<IItem>();
 
         // 메소드
+
+        // 인벤토리에 있는 무기 반환
+        public List<Weapon> GetWeapon() => items.OfType<Weapon>().ToList();
 
         // 해당 무기를 만들 수 있는가?
         public bool CanCraftWeapon(Weapon weapon)
@@ -32,19 +36,9 @@ namespace Smithy_Story
                 var haveItem = items.FirstOrDefault(i =>
                     i != null && i.Name.Equals(requiredResource.Name, StringComparison.OrdinalIgnoreCase));
 
-                if (haveItem == null)
-                {
-                    Console.WriteLine($"[부족] {requiredResource.Name} 이(가) 인벤토리에 없습니다.");
+                // 필요한 재료가 없거나 수량이 부족한 경우
+                if (haveItem == null || haveItem.Quantity < requiredAmount)
                     return false;
-                }
-
-                if (haveItem.Quantity < requiredAmount)
-                {
-                    Console.WriteLine($"[부족] {requiredResource.Name} 부족 ({haveItem.Quantity}/{requiredAmount})");
-                    return false;
-                }
-
-                Console.WriteLine($"[확인] {requiredResource.Name} OK ({haveItem.Quantity}/{requiredAmount})");
             }
 
             return true;
@@ -79,6 +73,20 @@ namespace Smithy_Story
         // 아이템 삭제(item)
         public void RemoveItem(IItem item)
         {
+            // 무기타입인 경우
+            if (item is Weapon)
+            {
+                foreach (Weapon i in items.OfType<Weapon>())
+                {
+                    // 강화수치 비교 후 삭제
+                    if (i.EnhanceLevel == (item as Weapon).EnhanceLevel)
+                    {
+                        items.Remove(i);
+                        return;
+                    }
+                }
+            }
+
             items.Remove(item);
         }
 
