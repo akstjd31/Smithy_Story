@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Smithy_Story
@@ -15,152 +16,142 @@ namespace Smithy_Story
         End
     }
 
-    // 단순히 의뢰 보상 계산, 데이터 생성만 함.
     public class RequestManager
     {
         // 상수
-        const int MaxRequestCount = 3;  // 플레이어가 지닐 수 있는 의뢰 최대 개수
+        private const int MaxRequestCount = 3;    // 하루 최대 수락 가능 수
+        private const int DailyRequestCount = 7; // 하루 표시되는 의뢰 개수
 
         // 변수
-        private int nextId = 101;
         private List<Request> dailyRequests = new List<Request>();
         private Random rand = new Random();
 
-        // 프로퍼티
-        // 생성자
-        // 메소드
-
-        // 의뢰 수락(인덱스, 플레이어)
-        public void AcceptRequest(int idx, Player player)
-        {
-            if (dailyRequests[idx] == null)
-                return;
-
-            // 보유 의뢰 개수를 초과하지 못함.
-            if (player.ArchiveRequests.Count >= MaxRequestCount)
-            {
-                Console.WriteLine($"하루 받을 수 있는 최대 의뢰의 수는 {MaxRequestCount}개 입니다!");
-                return;
-            }
-
-            var request = (Request)dailyRequests[idx].Clone();
-            player.AddRequest(request);
-            Console.WriteLine(request.Title + " 새로운 의뢰 수락!");
-            dailyRequests.RemoveAt(idx);
-        }
-
-        // 의뢰 완료
-        public void CompleteReqeust(Request request, Player player)
-        {
-            if (player.ArchiveRequests.Contains(request))
-            {
-                player.ArchiveRequests.Remove(request);
-                Console.WriteLine(request.Title + " 의뢰 완료!");
-            }
-        }
-
-        // 일일 의뢰 목록 생성하기
-        public void GenerateDailyRequests(int count)
-        {
-            dailyRequests.Clear();  // 의뢰 리스트를 비우고 새로 만듦.
-
-            for (int i = 0; i < count; i++)
-            {
-                Request newRequest = CreateRandomRequest();
-                dailyRequests.Add(newRequest);
-            }
-        }
-
-        // 의뢰 목록 전부 보기
-
+        // 플레이어가 받을 수 있는 의뢰 목록 반환
         public List<Request> GetDailyRequests()
         {
             return dailyRequests;
         }
 
-        // 만료된 의뢰가 있는지?
+        // 하루 의뢰 생성
+        public void GenerateDailyRequests()
+        {
+            dailyRequests.Clear();
+
+            var allRequests = RequestData.GetAll().ToList();
+            if (allRequests.Count == 0)
+            {
+                Console.WriteLine("의뢰 데이터가 존재하지 않습니다.");
+                return;
+            }
+
+            // 무작위로 N개 선택
+            for (int i = 0; i < DailyRequestCount; i++)
+            {
+                var index = rand.Next(allRequests.Count);
+                var baseReq = allRequests[index];
+
+                var clone = (Request)baseReq.Clone();                                // ID 붙여주기
+                dailyRequests.Add(clone);
+            }
+
+            Console.WriteLine($"오늘의 의뢰 {dailyRequests.Count}개가 생성되었습니다!");
+        }
+
+        // 의뢰 수락
+        public void AcceptRequest(int index, Player player)
+        {
+            if (index < 0 || index >= dailyRequests.Count)
+            {
+                Console.WriteLine("잘못된 의뢰 인덱스입니다.");
+                return;
+            }
+
+            if (player.ArchiveRequests.Count >= MaxRequestCount)
+            {
+                Console.WriteLine($"의뢰 수락 불가! 하루 최대 {MaxRequestCount}개까지 가능합니다.");
+                return;
+            }
+
+            var request = (Request)dailyRequests[index].Clone();
+            player.AddRequest(request);
+            dailyRequests.RemoveAt(index);
+
+            Console.WriteLine($"[의뢰 수락] {request.Name}");
+        }
+
+        // 의뢰 완료 처리
+        public void CompleteRequest(Request request, Player player)
+        {
+            if (player.ArchiveRequests.Remove(request))
+            {
+                Console.WriteLine($"[의뢰 완료] {request.Name} — 보상: {request.Reward}G");
+            }
+            else
+            {
+                Console.WriteLine("해당 의뢰는 플레이어의 목록에 없습니다.");
+            }
+        }
+
+        // 만료된 의뢰 제거
         public void CheckExpiredRequests(List<Request> requests, GameTime gameTime)
         {
+            var expired = new List<Request>();
+
             foreach (var req in requests)
             {
                 if (req.IsExpired(gameTime.Day))
                 {
-                    Console.WriteLine($"[만료] 의뢰 '{req.Title}' 의 데드라인이 지났습니다! 해당 의뢰를 제거합니다.");
-                    requests.Remove(req);
+                    expired.Add(req);
                 }
             }
+
+            foreach (var req in expired)
+            {
+                requests.Remove(req);
+                Console.WriteLine($"[만료] {req.Name} — 데드라인이 지났습니다.");
+            }
         }
 
-        // 등급별 보상 계산
-        private int CalculateReward(IItem item, RequestType type)
+        // 보상 계산 (아이템 등급과 수량에 따라 가중치 부여)
+        private int CalculateReward(IItem item, RequestType type, int neededCount)
         {
-            int baseReward = 50;     // 의뢰 종류에 따른 기본 보상
-            switch (type)
-            {
-                case RequestType.CraftWeapon: baseReward = 100; break;
-                //case RequestType.RepairWeapon: baseReward = 50; break;
-                case RequestType.DeliverItem: baseReward = 30; break;
-            }
+            int baseReward = 50;
 
-            double multiplier;  // 등급 가중치
-            switch (item.Grade)
-            {
-                case Grade.Common: multiplier = 1.0; break;
-                case Grade.Rare: multiplier = 1.5; break;
-                case Grade.Epic: multiplier = 2.5; break;
-                case Grade.Legendary: multiplier = 5.0; break;
-                default: multiplier = 1.0; break;
-            }
-
-            // 기본 보상 * 등급 * 아이템 개수
-            return (int)(baseReward * multiplier * item.Quantity);
-        }
-
-        // 타이틀 생성
-        private string CreateTitle(IItem item, RequestType type)
-        {
             switch (type)
             {
                 case RequestType.CraftWeapon:
-                    return "[제작 의뢰]:" + item.Name;
-                case RequestType.RepairWeapon:
-                    return "[수리 의뢰]:" + item.Name;
+                    baseReward = 100;
+                    break;
                 case RequestType.DeliverItem:
-                    return "[배달 의뢰]:" + item.Name;
+                    baseReward = 30;
+                    break;
                 default:
-                    return item.Name;
+                    baseReward = 50;
+                    break;
             }
-        }
 
-        // 의뢰 종류 하나 뽑기
-        public int RandomRequestType() => rand.Next((int) RequestType.Start + 1, (int) RequestType.End);
-        
-        // 만들어진 모든 데이터를 갖다가 의뢰 하나를 생성하기.
-        private Request CreateRandomRequest()
-        {
-            // 무기, 재료 모두 합치기
-            var items = new List<IItem>();
-            items.AddRange(ResourceData.GetAll().Cast<IItem>());
-            items.AddRange(WeaponData.GetAll().Cast<IItem>());
+            double gradeMultiplier = 1.0;
 
-            if (items.Count == 0)
+            switch (item.Grade)
             {
-                Console.WriteLine("저장된 데이터가 없습니다!");
-                return null;
+                case Grade.Common:
+                    gradeMultiplier = 1.0;
+                    break;
+                case Grade.Rare:
+                    gradeMultiplier = 1.5;
+                    break;
+                case Grade.Epic:
+                    gradeMultiplier = 2.5;
+                    break;
+                case Grade.Legendary:
+                    gradeMultiplier = 5.0;
+                    break;
+                default:
+                    gradeMultiplier = 1.0;
+                    break;
             }
 
-            // 랜덤 아이템 선택
-            IItem item = items[rand.Next(items.Count)];
-
-            // 의뢰 종류 랜덤으로 선택
-            RequestType type = (RequestType)RandomRequestType();
-
-
-            int reward = CalculateReward(item, type);
-            string title = CreateTitle(item, type);
-            int deadline = 3;   // 수정 필요
-
-            return new Request(nextId++, title, item, reward, deadline, type);
+            return (int)(baseReward * gradeMultiplier * neededCount);
         }
     }
 }

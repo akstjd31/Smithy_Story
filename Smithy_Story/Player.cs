@@ -79,7 +79,7 @@ namespace Smithy_Story
             Console.WriteLine(this.name + "의 의뢰 목록");
             Console.WriteLine("=================================================");
             foreach (var request in ArchiveRequests)
-                Console.WriteLine("- " + request.Title);
+                Console.WriteLine("- " + request.Name);
             Console.WriteLine();
         }
 

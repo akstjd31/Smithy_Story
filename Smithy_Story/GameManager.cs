@@ -201,7 +201,7 @@ namespace Smithy_Story
             gameTime.AddDays();                         // 하루 증가
             gameTime.SetTime(8, 0);                    // 시간 초기화 (테스트)
             shop.RefreshStock();                        // 상점 목록 리셋
-            requestManager.GenerateDailyRequests(7);    // 일일 의뢰 추가
+            requestManager.GenerateDailyRequests();    // 일일 의뢰 추가
 
             // 만료된 의뢰가 있는지 확인 후 정리
             requestManager.CheckExpiredRequests(player.ArchiveRequests, gameTime);
