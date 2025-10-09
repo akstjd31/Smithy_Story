@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Smithy_Story
 {
-
+ 
+    // 강화 관련 데이터
     public static class EnhanceData
     {
         // <강화 수치, 확률>
@@ -29,6 +30,7 @@ namespace Smithy_Story
         new Enhance(0.03, 0.57, 0.40)   // 15강
         };
 
+        // 강화 수치(인덱스)에 따른 확률 반환
         public static Enhance GetData(int level)
         {
             if (level >= enhanceList.Count)

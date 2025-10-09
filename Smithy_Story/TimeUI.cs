@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Smithy_Story
 {
-    
+    // 시간 UI 클래스
     public class TimeUI
     {
         // 변수
@@ -19,7 +19,7 @@ namespace Smithy_Story
         }
 
         // 메소드
-        // UI 출력문 작성
+        // 출력
         public void Update()
         {
             Console.Write(gameTime.ToString() + "\t\t");

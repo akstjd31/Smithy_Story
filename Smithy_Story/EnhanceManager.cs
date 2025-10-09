@@ -16,6 +16,7 @@ namespace Smithy_Story
         // 무기 강화
         public bool Enhance(Inventory inventory, Weapon weapon)
         {
+            // 최대 수치(15강) 도달
             if (weapon.EnhanceLevel == MaxEnhanceLevel)
             {
                 Console.Clear();
@@ -33,6 +34,7 @@ namespace Smithy_Story
             Console.WriteLine("\n강화 중...");
             Thread.Sleep(1000);
 
+            // 확률 데이터 빼놓기
             double success = enhance.SuccessRate;
             double fail = enhance.FailRate;
             double destroy = enhance.DestroyRate;

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Smithy_Story
 {
+    // 재료 데이터 클래스
     public class ResourceData
     {
         // 상수

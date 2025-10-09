@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Smithy_Story
 {
+    // 플레이어 UI 클래스
     public class PlayerUI
     {
         // 변수
@@ -21,10 +22,7 @@ namespace Smithy_Story
         public void Update()
         {
             if (player != null)
-            {
                 Console.WriteLine(player.ToString());
-            }
-
         }
     }
 }

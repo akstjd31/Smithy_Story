@@ -17,10 +17,9 @@ namespace Smithy_Story
         // 프로퍼티
 
         // 생성자
-        // 생성자
         static WeaponData()
         {
-            // ---------------------- Common 무기 ----------------------
+            // Common (1 ~ )
             manager.AddItem(new Weapon(id: 1, name: "곡괭이", price: 20, grade: Grade.Common, craftMinutes: 10,
                 requiredResources: new Dictionary<Resource, int> {
                     { ResourceData.GetByName("돌"), 3 },
@@ -47,7 +46,7 @@ namespace Smithy_Story
                 }));
 
 
-            // ---------------------- Rare 무기 ----------------------
+            // Rare (51 ~ )
             manager.AddItem(new Weapon(id: 51, name: "단검", price: 80, grade: Grade.Rare, craftMinutes: 40,
                 requiredResources: new Dictionary<Resource, int> {
                     { ResourceData.GetByName("구리"), 3 },
@@ -67,7 +66,7 @@ namespace Smithy_Story
                 }));
 
 
-            // ---------------------- Epic 무기 ----------------------
+            // Epic (71 ~ )
             manager.AddItem(new Weapon(id: 71, name: "금제창", price: 200, grade: Grade.Epic, craftMinutes: 90,
                 requiredResources: new Dictionary<Resource, int> {
                     { ResourceData.GetByName("금광석"), 3 },
@@ -90,7 +89,7 @@ namespace Smithy_Story
                 }));
 
 
-            // ---------------------- Legendary 무기 ----------------------
+            // Legendary (91 ~ )
             manager.AddItem(new Weapon(id: 91, name: "용린검", price: 450, grade: Grade.Legendary, craftMinutes: 200,
                 requiredResources: new Dictionary<Resource, int> {
                     { ResourceData.GetByName("용의 비늘"), 2 },

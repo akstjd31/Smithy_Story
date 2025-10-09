@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Smithy_Story
 {
-    
+    // 무기 클래스
     public class Weapon : IItem
     {
         // 상수
@@ -18,7 +18,6 @@ namespace Smithy_Story
         private int craftMinutes;   // 제작 시간
 
         // 프로퍼티
-
         public int Durability { get; private set; }
 
         public Dictionary<Resource, int> RequiredResources { get; private set; }
@@ -94,6 +93,7 @@ namespace Smithy_Story
             return value;
         }
 
+        // 복사
         public IItem Clone()
         {
             // RequiredResources 딥 카피

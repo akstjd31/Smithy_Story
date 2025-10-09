@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace Smithy_Story
 {
+    // 상점 클래스
     public class Shop
     {
         // 상수
@@ -24,6 +25,7 @@ namespace Smithy_Story
         { Grade.Epic, 10 },
         { Grade.Legendary, 3 } 
     };
+
         // 생성자
         public Shop()
         {
@@ -34,12 +36,12 @@ namespace Smithy_Story
         // 길이 반환
         public int GetStockLength() => stock.Length;
 
+        // 상점 새로고침
         public void RefreshStock()
         {
             // 배열 초기화
             Array.Clear(stock, 0, stock.Length);
 
-            // 전체 재료 목록 가져오기
             var resources = ResourceData.GetAll().ToList();
 
             // 등급별로 나누기
@@ -65,18 +67,9 @@ namespace Smithy_Story
 
                     selected.Add(newItem);
                 }
-                //else
-                //{
-                //    // 해당 등급에 자원이 없으면 Common으로 대체
-                //    var fallbackList = groupedResources[Grade.Common];
-                //    var fallback = fallbackList[rand.Next(fallbackList.Count)];
-                //    Resource newItem = new Resource(fallback.ID, fallback.Name, fallback.Price, fallback.Grade);
-                //    newItem.Quantity = rand.Next(3, 8);
-                //    selected.Add(newItem);
-                //}
             }
-
-            // 배열에 적용
+            
+            // 실제 진열대에 옮기기
             for (int i = 0; i < selected.Count; i++)
                 stock[i] = selected[i];
         }
@@ -85,6 +78,7 @@ namespace Smithy_Story
         // 등급 뽑기
         private Grade GetRandomGrade(Dictionary<Grade, int> weights)
         {
+            // 확률 (1 ~ 100)
             int roll = rand.Next(1, 101);
 
             int cumulative = 0;
@@ -95,11 +89,10 @@ namespace Smithy_Story
                     return kvp.Key;
             }
 
-            return Grade.Common; // 기본값
+            return Grade.Common;
         }
-
-
-
+        
+        // 출력
         public void ShowStock()
         {
             Console.Clear();
@@ -122,24 +115,35 @@ namespace Smithy_Story
         // 수량 체크(이미 인덱스 체크는 한 상태)
         public bool IsExistItemQuantity(int idx, int quantity) => quantity > 0 && (quantity <= stock[idx].Quantity) ? true : false;
 
-        // 구매 할 번호 - 1 == 인덱스, 수량, 플레이어
+        // 구매
         public bool Buy(int num, int quantity, Player player, Inventory inventory)
         {
             int idx = num - 1;
 
-            // 수량 입력이 잘못 들어왔을 경우
-            if (quantity < 1 || quantity > stock[idx].Quantity)
+            if (stock[idx] == null)
             {
-                Console.WriteLine($"구매하려는 [{stock[idx].Name}]의 수량이 부족하거나 1 이상의 숫자를 입력해주세요.");
+                Console.Clear();
+                Console.WriteLine($"해당 칸에 물품이 없습니다.");
+                Thread.Sleep(1000);
                 return false;
             }
 
-            // 구매하려는 플레이어의 보유 금액이 부족할 때
+            // 예외
+            if (quantity < 1 || quantity > stock[idx].Quantity)
+            {
+                Console.Clear();
+                Console.WriteLine($"구매하려는 [{stock[idx].Name}]의 수량이 부족하거나 1 이상의 숫자를 입력하세요.");
+                Thread.Sleep(1000);
+                return false;
+            }
+
+            // 플레이어의 보유 금액이 부족할 때
             int totalPrice = stock[idx].Price * quantity;
             if (player.Money >= totalPrice)
             {
                 var item = (Resource)stock[idx].Clone();
-                inventory.AddItem(item, quantity);
+                item.Quantity = quantity;
+                inventory.AddItem(item);
 
                 // 플레이어 소비, 상점 개수 변동
                 player.Money -= totalPrice;

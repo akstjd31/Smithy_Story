@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Smithy_Story
 {
+    // 인벤토리 클래스
     public class Inventory
     {
         // 변수
@@ -29,17 +30,23 @@ namespace Smithy_Story
             }   
         }
 
-        // 인벤토리에 있는 무기 반환
+        // 인벤토리에 있는 무기 중 15강 미만인 무기 반환
+        public List<Weapon> GetEnhancableWeapon()
+        {
+            return items
+                .OfType<Weapon>()
+                .Where(w => w.EnhanceLevel < 15)
+                .ToList();
+        }
+
+        // 인벤토리에 존재하는 무기 리스트 반환
         public List<Weapon> GetWeapon() => items.OfType<Weapon>().ToList();
 
         // 해당 무기를 만들 수 있는가?
         public bool CanCraftWeapon(Weapon weapon)
         {
             if (items == null)
-            {
-                Console.WriteLine("[오류] 인벤토리의 items가 초기화되지 않았습니다.");
                 return false;
-            }
 
             // 무기 제작에 필요한 재료(Resource), 수량(int) 비교
             foreach (var reqResource in weapon.RequiredResources)
@@ -47,7 +54,7 @@ namespace Smithy_Story
                 Resource requiredResource = reqResource.Key;
                 int requiredAmount = reqResource.Value;
 
-                // 제일 먼저 찾은거로 비교 (대소문자 무시)
+                // 해당 무기에 필요한 재료가 인벤토리에 있으면
                 var haveItem = items.FirstOrDefault(i =>
                     i != null && i.Name.Equals(requiredResource.Name, StringComparison.OrdinalIgnoreCase));
 
@@ -61,11 +68,8 @@ namespace Smithy_Story
 
 
         // 아이템 추가
-        public void AddItem(IItem item, int quantity = 1)
+        public void AddItem(IItem item)
         {
-            if (quantity != 1)
-                item.Quantity = quantity;
-
             // 개수를 늘릴 수 있는가?
             if (item.IsStackable)
             {
@@ -171,6 +175,8 @@ namespace Smithy_Story
             if (items.Count < 1)
             {
                 Console.WriteLine("대장간에는 아무것도 없습니다!");
+                Thread.Sleep(1000);
+                return;
             }
 
             Console.WriteLine("- 무기/재료 목록");

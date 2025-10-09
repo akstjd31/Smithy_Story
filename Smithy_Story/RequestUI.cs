@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Smithy_Story
 {
+    // 의뢰 UI 클래스
     public class RequestUI
     {
         // 변수

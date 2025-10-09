@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Smithy_Story
 {
+    // 의뢰 종류
     public enum RequestType
     {
         Start,
@@ -33,9 +35,10 @@ namespace Smithy_Story
             return dailyRequests;
         }
 
-        // 하루 의뢰 생성
+        // 일일 의뢰 생성
         public void GenerateDailyRequests()
         {
+            // 의뢰 리스트 초기화
             dailyRequests.Clear();
 
             var allRequests = RequestData.GetAll().ToList();
@@ -52,8 +55,13 @@ namespace Smithy_Story
                 var baseReq = allRequests[index];
 
                 var clone = (Request)baseReq.Clone();
-                
-                clone.Reward = CalculateReward(baseReq);  // 미리 계산해 둔 보상 적용
+
+                // 미리 계산해 둔 보상 적용
+                clone.SetReward(CalculateReward(baseReq));
+
+                // 강화 수치 적용
+                clone.SetNeededCount(GetEnhanceLevel(clone.Name));
+
 
                 // 수리 의뢰면 내구도 조정
                 if (clone.Type == RequestType.RepairWeapon)
@@ -68,6 +76,21 @@ namespace Smithy_Story
             Console.WriteLine($"오늘의 의뢰 {dailyRequests.Count}개가 생성되었습니다!");
         }
 
+        // 타이틀에서 강화 수치 가져오기
+        private int GetEnhanceLevel(string text)
+        {
+            // 숫자(\d+)만 추출
+            var matches = Regex.Matches(text, @"\d+");
+
+            if (matches.Count > 0)
+            {
+                // 여러 숫자가 있으면 첫 번째만 반환
+                return int.Parse(matches[0].Value);
+            }
+
+            return 1; // 숫자 없을 경우 기본값
+        }
+
         // 의뢰 수락
         public bool AcceptRequest(int index, Player player, Inventory inventory)
         {
@@ -77,28 +100,31 @@ namespace Smithy_Story
                 return false;
             }
 
-            if (player.GetRequestCount() >= MaxRequestCount)
+            if (player.ArchiveRequests.Count >= MaxRequestCount)
             {
                 Console.Clear();
-                Console.WriteLine($"의뢰 수락 불가! 하루 최대 {MaxRequestCount}개까지 가능합니다.");
+                Console.WriteLine($"보유 의뢰 수는 최대 {MaxRequestCount}개까지 가능합니다.");
                 Thread.Sleep(2000);
                 return false;
             }
 
-            var request = (Request)dailyRequests[index].Clone();          // 아래 코드가 실행되도록 아이템을 집어넣기
+            var request = dailyRequests[index];
 
             player.AddRequest(request);
             dailyRequests.RemoveAt(index);
 
             RequestType type = request.Type;
-            // 강화/수리 의뢰일 경우만 플레이어한테 맡기므로
+
+            // 강화/수리 의뢰일 경우만 맡기는 아이템이 존재하므로
             if (request.Item != null && (type.Equals(RequestType.EnhanceWeapon) || type.Equals(RequestType.RepairWeapon)))
             {
-                (request.Item as Weapon).IsItemDeposited = true;    // 맡긴 물건 표시
+                (request.Item as Weapon).IsItemDeposited = true;
                 inventory.AddItem(request.Item);
             }
 
-
+            Console.Clear();
+            Console.WriteLine($"[{request.Name}] 의뢰를 수락했습니다!");
+            Thread.Sleep(2000);
             return true;
         }
 
@@ -112,8 +138,9 @@ namespace Smithy_Story
                 return;
             }
 
-            var items = inventory.GetItemById(request.Item.ID);  // 같은 ID를 가진 인벤토리 아이템
+            var items = inventory.GetItemById(request.Item.ID);
 
+            // 의뢰 종류에 따른 완료 시점
             switch (request.Type)
             {
                 case RequestType.DeliverItem:
@@ -134,30 +161,44 @@ namespace Smithy_Story
                     {
                         // 무기 중에 내구도 100 찾으면 완료 처리
                         if (item is Weapon)
+                        {
                             request.IsCompleted = (item as Weapon)?.Durability == Weapon.MaxDurability;
+
+                            // 완료 처리 후 인벤토리에서 제거
+                            if (request.IsCompleted)
+                                inventory.RemoveItem(item);
+                        }
+                            
                     }
 
                     break;
                 case RequestType.EnhanceWeapon:
                     // 인벤토리에 존재하는 같은 아이템 중
-                    foreach (var item in items)
+                    var weapons = items.OfType<Weapon>().ToList();
+                    foreach (var weapon in weapons)
                     {
-                        // 무기 중에 같은 강화 수치 무기 존재 == 완료
-                        if (item is Weapon)
-                            request.IsCompleted = (item as Weapon)?.EnhanceLevel == (request.Item as Weapon)?.EnhanceLevel;
+                        // 의뢰자가 원하는 강화 수치 == 인벤에 존재하는 강화 수치가 똑같은 아이템 => 성공
+                        request.IsCompleted = (weapon.EnhanceLevel == request.NeededCount);
+
+                        if (request.IsCompleted)
+                            inventory.RemoveItem(weapon);
                     }
 
                     break;
             }
 
+            // 완료 처리 (완료된 보유 의뢰 제거)
             if (request.IsCompleted)
             {
+                Console.Clear();
+                player.Money += request.Reward;
+                Console.WriteLine($"[{request.Name}] 의뢰 완료! (보상: {request.Reward})");
                 player.ArchiveRequests.Remove(request);
-                Console.WriteLine($"[{request.Name}] 의뢰 완료!");
                 Thread.Sleep(1000);
             }
             else
             {
+                Console.Clear();
                 Console.WriteLine("해당 의뢰는 완료할 수 없습니다!");
                 Thread.Sleep(1000);
             }
@@ -165,22 +206,41 @@ namespace Smithy_Story
 
 
         // 만료된 의뢰 제거
-        public void CheckExpiredRequests(List<Request> requests, GameTime gameTime)
+        public void CheckExpiredRequests(List<Request> requests, GameTime gameTime, Inventory inventory)
         {
-            var expired = new List<Request>();
+            // 만료된 의뢰 리스트 인덱스
+            var iStack = new Stack<int>();
 
-            foreach (var req in requests)
-            {
-                if (req.IsExpired(gameTime.Day))
+             for (int i = 0; i < requests.Count; i++)
+             {
+                if (requests[i].IsExpired())
                 {
-                    expired.Add(req);
+                    iStack.Push(i);
                 }
-            }
+             }
 
-            foreach (var req in expired)
+            while (iStack.Count > 0)
             {
-                requests.Remove(req);
-                Console.WriteLine($"[만료] {req.Name} — 데드라인이 지났습니다.");
+                int i = iStack.Pop();
+                Console.WriteLine($"[{requests[i].Name}] 의뢰가 만료되었습니다.");
+
+                // 강화나 수리 의뢰였다면 인벤토리에서 해당 아이템 제거
+                if (requests[i].Type.Equals(RequestType.EnhanceWeapon) || requests[i].Type.Equals(RequestType.RepairWeapon))
+                {
+                    foreach (Weapon weapon in inventory.GetWeapon())
+                    {
+                        // ID와 빌려준 아이템(IsItemDeposited)인지 확인 후 제거
+                        if (requests[i].Item.ID == weapon.ID)
+                        {
+                            if (weapon.IsItemDeposited)
+                                inventory.RemoveItem(weapon);
+                        }
+                    }
+                }
+
+                // 뒤에서부터 제거 (리스트 구조 생각해서)
+                requests.RemoveAt(i);
+                Thread.Sleep(2000);
             }
         }
 

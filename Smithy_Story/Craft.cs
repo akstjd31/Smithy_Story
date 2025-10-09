@@ -30,25 +30,31 @@ namespace Smithy_Story
                 return null;
 
             List<Weapon> craftableWeapons = new List<Weapon>();
+
+            // 모든 무기 데이터
             foreach (var weapon in WeaponData.GetAll())
             {
                 // 만들 수 있는 무기인가?
                 if (inventory.CanCraftWeapon(weapon))
                     craftableWeapons.Add(weapon);
             }
+
             return craftableWeapons;
         }
 
+        // 해당 무기의 주재료가 인벤에 존재하는지?
         public bool CraftWeapon(Weapon weapon)
         {
             if (weapon == null)
                 return false;
 
+            // 필요로 하는 재료
             foreach (var reqResource in weapon.RequiredResources)
             {
                 Resource resource = reqResource.Key;
                 int requiredAmount = reqResource.Value;
 
+                // 인벤에서 찾은 주재료
                 var haveItem = inventory.GetItemsByName(resource.Name).FirstOrDefault();
 
                 // 재료 개수 줄이기 or 삭제

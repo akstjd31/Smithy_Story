@@ -36,7 +36,7 @@ namespace Smithy_Story
             return weaponsToRepair;
         }
 
-        // GPT가 짜준 수리 비용 계산
+        // GPT가 짜준 수리 비용 계산 (사실 잘 적용되는지 모르겠음)
         public int CalculateRepairCost(Weapon weapon)
         {
             double gradeMultiplier = 1.0;

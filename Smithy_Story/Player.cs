@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 
 namespace Smithy_Story
 {
+    // 플레이어 클래스
     public class Player
     {
         // 상수
         public static readonly int MaxFatigue = 100; // 최대 피로도
 
         // 변수
-        private string name;
-        private int fatigue;                    // 피로도
-        private int money;                      // 자산
+        private string name;                        // 이름
+        private int fatigue;                        // 피로도
+        private int money;                          // 자산
 
         // 프로퍼티
         public string Name
@@ -57,14 +58,20 @@ namespace Smithy_Story
             if (Fatigue > MaxFatigue) Fatigue = MaxFatigue;
         }
 
+        // 의뢰 남은 일자 줄이기
+        public void DecreaseRequestDeadline()
+        {
+            foreach (var request in ArchiveRequests)
+            {
+                request.DecreaseDeadlineDay();
+            }
+        }
+
         // 피로도 초기화 (하루가 지났을 때)
         public void ResetFatigue() => Fatigue = 0;
 
         // 의뢰 추가
         public void AddRequest(Request req) => ArchiveRequests.Add(req);
-
-        // 보유 의뢰 개수 반환
-        public int GetRequestCount() => ArchiveRequests.Count;
 
         // 보유 중인 의뢰 출력
         public void ShowActiveReqeusts()
@@ -72,12 +79,30 @@ namespace Smithy_Story
             Console.Clear();
             Console.WriteLine(this.name + "의 의뢰 목록");
             Console.WriteLine("=================================================");
+
             for (int i = 0; i < ArchiveRequests.Count; i++)
-                Console.WriteLine($"{i + 1}. {ArchiveRequests[i].Name}");
+            {
+                //string output = "";
+                
+                //output = $"{i + 1}. [{ArchiveRequests[i].Name}]\t남은 기간: {ArchiveRequests[i].DeadlineDay}";
+                //switch (ArchiveRequests[i].Type)
+                //{
+                //    case RequestType.RepairWeapon:
+                //    case RequestType.CraftWeapon:
+                //        output = $"{i + 1}. {ArchiveRequests[i].Name}";
+                //        break;
+                //    case RequestType.DeliverItem:
+                //        output = $"{i + 1}. {ArchiveRequests[i].Name }"
+
+                //}
+
+                Console.WriteLine($"{i + 1}. [{ArchiveRequests[i].Name}]\t남은 기간: {ArchiveRequests[i].DeadlineDay}");
+            }
 
             Console.WriteLine();
         }
 
+        // ToString 재정의
         public override string ToString() => $"이름: {Name}\t피로도: {Fatigue}/{MaxFatigue}\t돈: {Money:N0}";
     }
 }

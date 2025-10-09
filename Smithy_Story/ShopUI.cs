@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Smithy_Story
 {
+    // 상점 UI 클래스
     public class ShopUI
     {
         // 변수
@@ -18,7 +19,7 @@ namespace Smithy_Story
         }
 
         // 메소드
-        // 상점 UI
+        // 출력
         public void Update()
         {
             if (shop != null)

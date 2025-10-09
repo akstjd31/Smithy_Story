@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Smithy_Story
 {
+    // UI 관리자 클래스 (모든 UI 관리) => 근데 잘 사용하고 있는거 같지 않음
     public class UIManager
     {
         // 상수
@@ -66,9 +67,10 @@ namespace Smithy_Story
             timeUI.Update();
         }
 
-        public void UpdateShopUI()
-        {
-            shopUI.Update();
-        }
+        //// 상점 UI 출력
+        //public void UpdateShopUI()
+        //{
+        //    shopUI.Update();
+        //}
     }
 }

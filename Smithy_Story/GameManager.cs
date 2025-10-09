@@ -30,9 +30,9 @@ namespace Smithy_Story
         private RequestManager requestManager;
         private Shop shop;
         private UIManager uiManager;
-
         private GameScreen currentScreen;
 
+        // 생성자(초기화 작업)
         public GameManager(string playerName)
         {
             player = new Player(playerName, money: 1000);
@@ -52,6 +52,8 @@ namespace Smithy_Story
         {
             while (currentScreen != GameScreen.Exit)
             {
+
+                // 각 화면(GameScreen)마다 해당 기능 수행
                 switch (currentScreen)
                 {
                     case GameScreen.MainMenu:
@@ -108,6 +110,7 @@ namespace Smithy_Story
                 Console.WriteLine("3. 게임 종료");
                 Console.Write("입력: ");
 
+                // 메인 화면에서 선택
                 var key = Console.ReadKey(true).Key;
                 switch (key)
                 {
@@ -121,8 +124,9 @@ namespace Smithy_Story
                     case ConsoleKey.NumPad3:
                         return GameScreen.Exit;
                     default:
+                        Console.Clear();
                         Console.WriteLine("\n잘못된 입력입니다.");
-                        Thread.Sleep(800);
+                        Thread.Sleep(1000);
                         break;
                 }
             }
@@ -144,9 +148,10 @@ namespace Smithy_Story
                 Console.WriteLine("4. 인벤토리 보기");
                 Console.WriteLine("5. 오늘의 상점 이용");
                 Console.WriteLine("6. 무기 레시피 보기\n");
-
                 Console.Write("입력: ");
                 var key = Console.ReadKey(true).Key;
+
+                // 인 게임 내 선택
                 switch (key)
                 {
                     case ConsoleKey.D1:
@@ -168,23 +173,24 @@ namespace Smithy_Story
                     case ConsoleKey.NumPad6:
                         return GameScreen.WeaponMenu;
                     default:
+                        Console.Clear();
                         Console.WriteLine("잘못된 입력입니다.");
-                        Thread.Sleep(800);
+                        Thread.Sleep(1000);
                         break;
                 }
             }
         }
 
-        // 자야됨.
+        // 특정 시간, 피로도 소요가 있는 작업 수행 시 끝 부분에 실행할 코드(풀 피로도인가? / 24시가 넘었는가?)
         private bool Sleep()
         {
             if (player.Fatigue >= Player.MaxFatigue || gameTime.Hour >= 24)
             {
                 Console.Clear();
-                Console.WriteLine("\n피로가 누적되었거나 하루가 끝났습니다. 강제로 휴식합니다...");
+                Console.WriteLine("피로가 누적되었거나 하루가 끝났습니다. 강제로 휴식합니다...");
                 Thread.Sleep(1000);
 
-                Settings(); // 하루 리셋
+                Settings();
 
                 Console.WriteLine("휴식을 취했습니다. 하루가 시작됩니다.");
                 Thread.Sleep(1000);
@@ -199,12 +205,13 @@ namespace Smithy_Story
         {
             player.ResetFatigue();                      // 피로도 0
             gameTime.AddDays();                         // 하루 증가
-            gameTime.SetTime(8, 0);                    // 시간 초기화 (테스트)
+            gameTime.SetTime(8, 0);                    // 시간 초기화
             shop.RefreshStock();                        // 상점 목록 리셋
-            requestManager.GenerateDailyRequests();    // 일일 의뢰 추가
+            requestManager.GenerateDailyRequests();     // 일일 의뢰 추가
+            player.DecreaseRequestDeadline();           // 보유 중인 의뢰 남은 일자 감소
 
             // 만료된 의뢰가 있는지 확인 후 정리
-            requestManager.CheckExpiredRequests(player.ArchiveRequests, gameTime);
+            requestManager.CheckExpiredRequests(player.ArchiveRequests, gameTime, inventory);
             currentScreen = GameScreen.InGame;
         }
 
@@ -237,16 +244,18 @@ namespace Smithy_Story
             }
         }
 
-        // 무기 만들기
+        // 무기 제작
         private GameScreen CraftWeapon()
         {
-            Craft craft = new Craft(inventory);
+            // 대장간 생성
+            Craft craft = new Craft(inventory);     
 
             while (true)
             {
                 Console.Clear();
                 var craftable = craft.GetCraftableWeapon();
 
+                // 제작 가능한 무기가 없음.
                 if (!craftable.Any())
                 {
                     Console.Clear();
@@ -260,22 +269,39 @@ namespace Smithy_Story
                     Console.WriteLine($"{i + 1}. {craftable[i].Name}");
                 Console.Write("선택 (뒤로가기 0): ");
 
-                string input = Console.ReadLine();
-                if (input == "0") return GameScreen.ForgeMenu;
+                var input = Console.ReadKey();
+                if (input.Key.Equals(ConsoleKey.D0) || input.Key.Equals(ConsoleKey.NumPad0))
+                    return GameScreen.ForgeMenu;
 
-                if (int.TryParse(input, out int num) && num > 0 && num <= craftable.Count)
+                char keyChar = input.KeyChar;
+                if (char.IsDigit(keyChar))
                 {
-                    bool tryCraft = craft.CraftWeapon(craftable[num - 1]);
-                    if (tryCraft)
+                    int num = int.Parse(keyChar.ToString());
+
+                    if (num > 0 && num <= craftable.Count)
                     {
-                        gameTime.AddMinutes(120);
-                        player.IncreaseFatigue(10);
+
+                        bool tryCraft = craft.CraftWeapon(craftable[num - 1]);
+
+                        // 장비를 만들 수 있는 상태(주재료가 다 있음) - 피로도, 시간 소요
+                        if (tryCraft)
+                        {
+                            gameTime.AddMinutes(120);
+                            player.IncreaseFatigue(10);
+                        }
+                    }
+                    else
+                    {
+                        Console.Clear();
+                        Console.WriteLine("잘못된 입력입니다. 다시 입력해주세요.");
+                        Thread.Sleep(1000);
                     }
                 }
                 else
                 {
+                    Console.Clear();
                     Console.WriteLine("잘못된 입력입니다. 다시 입력해주세요.");
-                    Thread.Sleep(800);
+                    Thread.Sleep(1000);
                 }
 
                 if (Sleep())
@@ -288,31 +314,30 @@ namespace Smithy_Story
         private GameScreen EnhanceWeapon()
         {
             EnhanceManager enhance = new EnhanceManager();
-            var weapons = inventory.GetWeapon();
-            if (!weapons.Any())
-            {
-                Console.Clear();
-                Console.WriteLine("강화 가능한 장비가 없습니다.");
-                Thread.Sleep(1000);
-                return GameScreen.ForgeMenu;
-            }
-
             while (true)
             {
                 Console.Clear();
+                var weapons = inventory.GetEnhancableWeapon();
+
+                // 인벤토리에 강화할게 아예 없는 경우 (있어도 최대 15강인 무기거나, 무기가 없음)
+                if (!weapons.Any())
+                {
+                    Console.Clear();
+                    Console.WriteLine("강화 가능한 장비가 없습니다.");
+                    Thread.Sleep(1000);
+                    return GameScreen.ForgeMenu;
+                }
+
                 Console.WriteLine("강화 가능한 장비 목록");
                 for (int i = 0; i < weapons.Count; i++)
                     Console.WriteLine($"{i + 1}. {weapons[i].Name} 현재 {weapons[i].EnhanceLevel}강");
-                Console.Write("선택 (뒤로가기 0): ");
 
+                Console.Write("선택 (뒤로가기 0): ");
                 var input = Console.ReadKey(true);
                 if (input.Key.Equals(ConsoleKey.D0) || input.Key.Equals(ConsoleKey.NumPad0))
                     return GameScreen.InGame;
 
                 char keyChar = input.KeyChar;
-                if (keyChar == '0')
-                    return GameScreen.InGame;
-
                 if (char.IsDigit(keyChar))
                 {
                     int num = int.Parse(keyChar.ToString());
@@ -320,6 +345,8 @@ namespace Smithy_Story
                     if (num > 0 && num <= weapons.Count)
                     {
                         bool tryEnhance = enhance.Enhance(inventory, weapons[num - 1]);
+
+                        // 강화 시도
                         if (tryEnhance)
                         {
                             gameTime.AddMinutes(60);
@@ -328,9 +355,16 @@ namespace Smithy_Story
                     }
                     else
                     {
+                        Console.Clear();
                         Console.WriteLine("잘못된 입력입니다. 다시 입력해주세요.");
                         Thread.Sleep(1000);
                     }
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("숫자를 입력해주세요.");
+                    Thread.Sleep(1000);
                 }
 
                 if (Sleep())
@@ -365,8 +399,11 @@ namespace Smithy_Story
             while (true)
             {
                 var weaponsToRepair = repair.RepairWeapons(inventory);
+
+                // 수리가 필요한 목록(내구도가 100 미만)
                 if (!weaponsToRepair.Any())
                 {
+                    Console.Clear();
                     Console.WriteLine("수리 가능한 장비가 없습니다.");
                     Thread.Sleep(1000);
                     return GameScreen.ForgeMenu;
@@ -379,17 +416,18 @@ namespace Smithy_Story
 
                 Console.Write("선택 (뒤로가기 0): ");
                 var input = Console.ReadKey();
+
+                if (input.Key.Equals(ConsoleKey.D0) || input.Key.Equals(ConsoleKey.NumPad0))
+                    return GameScreen.ForgeMenu;
+
                 char keyChar = input.KeyChar;
-
-                if (keyChar == '0')
-                    return GameScreen.InGame;
-
                 if (char.IsDigit(keyChar))
                 {
                     int num = int.Parse(keyChar.ToString());
 
                     if (num > 0 && num <= weaponsToRepair.Count)
                     {
+                        // 수리 비용을 지불할 수 있는가?
                         int cost = repair.CalculateRepairCost(weaponsToRepair[num - 1]);
                         if (player.Money >= cost)
                         {
@@ -397,25 +435,32 @@ namespace Smithy_Story
                             player.Money -= cost;
                             gameTime.AddMinutes(30);
                             Console.Clear();
-                            Console.WriteLine($"{weaponsToRepair[num - 1]} 수리 완료!");
+                            Console.WriteLine($"{weaponsToRepair[num - 1]} 수리 완료! (수리 비용: {cost})");
                             Thread.Sleep(1000);
                         }
                         else
                         {
+                            Console.Clear();
                             Console.WriteLine("돈이 부족합니다.");
                             Thread.Sleep(1000);
                         }
                     }
                     else
                     {
+                        Console.Clear();
                         Console.WriteLine("잘못된 입력입니다. 다시 입력해주세요.");
-                        Thread.Sleep(800);
+                        Thread.Sleep(1000);
                     }
                 }
-
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("숫자를 입력해주세요.");
+                    Thread.Sleep(1000);
+                }
 
                 if (Sleep())
-                    return GameScreen.InGame; // 강제 종료 후 인게임으로 복귀
+                    return GameScreen.InGame;
             }
         }
 
@@ -424,6 +469,7 @@ namespace Smithy_Story
         {
             while (true)
             {
+                // 상점 열기
                 shop.ShowStock();
 
                 Console.Write("구매할 아이템 번호 (뒤로가기 0): ");
@@ -432,32 +478,57 @@ namespace Smithy_Story
                     return GameScreen.InGame;
 
                 char keyChar = input.KeyChar;
-                if (keyChar == '0')
-                    return GameScreen.InGame;
-
                 if (char.IsDigit(keyChar))
                 {
                     int num = int.Parse(keyChar.ToString());
 
                     if (num > 0 && num <= shop.GetStockLength())
                     {
-                        Console.Write("수량: ");
-                        string qInput = Console.ReadLine();
-                        if (int.TryParse(qInput, out int quantity) && quantity > 0)
+                        Console.Write("\n수량: ");
+                        var qInput = Console.ReadKey(true);
+                        char qKeyChar = qInput.KeyChar;
+
+                        if (char.IsDigit(qKeyChar))
                         {
-                            bool tryBuy = shop.Buy(num, quantity, player, inventory);
-                            if (tryBuy)
+                            int quantity = int.Parse(qKeyChar.ToString());
+
+                            if (quantity > 0)
                             {
-                                gameTime.AddMinutes(15);
-                                player.IncreaseFatigue(2);
+                                bool tryBuy = shop.Buy(num, quantity, player, inventory);
+
+                                // 구매 시도
+                                if (tryBuy)
+                                {
+                                    gameTime.AddMinutes(15);
+                                    player.IncreaseFatigue(2);
+                                }
+                            }
+                            else
+                            {
+                                Console.Clear();
+                                Console.WriteLine("\n수량을 잘못 입력하셨습니다.");
+                                Thread.Sleep(1000);
                             }
                         }
                         else
                         {
-                            Console.WriteLine("잘못된 입력입니다. 다시 시도해주세요.");
-                            Thread.Sleep(800);
+                            Console.Clear();
+                            Console.WriteLine("\n숫자를 입력해주세요.");
+                            Thread.Sleep(1000);
                         }
                     }
+                    else
+                    {
+                        Console.Clear();
+                        Console.WriteLine("\n해당 물품번호는 존재하지 않습니다.");
+                        Thread.Sleep(1000);
+                    }
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("\n숫자를 입력해주세요.");
+                    Thread.Sleep(1000);
                 }
 
                 if (Sleep())
@@ -478,11 +549,11 @@ namespace Smithy_Story
                 Console.Write("수락할 의뢰 번호 (뒤로가기 0): ");
 
                 var input = Console.ReadKey(true);
-                char keyChar = input.KeyChar;
 
-                if (keyChar == '0')
+                if (input.Key.Equals(ConsoleKey.D0) || input.Key.Equals(ConsoleKey.NumPad0))
                     return GameScreen.InGame;
 
+                char keyChar = input.KeyChar;
                 if (char.IsDigit(keyChar))
                 {
                     int num = int.Parse(keyChar.ToString());
@@ -499,14 +570,14 @@ namespace Smithy_Story
                     }
                     else
                     {
-                        Console.WriteLine("잘못된 입력입니다. 다시 시도해주세요.");
-                        Thread.Sleep(800);
+                        Console.WriteLine("\n잘못된 입력입니다. 다시 시도해주세요.");
+                        Thread.Sleep(1000);
                     }
                 }
                 else
                 {
-                    Console.WriteLine("숫자를 입력해주세요.");
-                    Thread.Sleep(800);
+                    Console.WriteLine("\n숫자를 입력해주세요.");
+                    Thread.Sleep(1000);
                 }
 
                 if (Sleep())
@@ -515,7 +586,7 @@ namespace Smithy_Story
         }
 
 
-        // 플레이어 보유 의뢰
+        // 플레이어 보유 의뢰(수락한 의뢰)
         private GameScreen ShowAcceptedRequests()
         {
             while (true)
@@ -523,29 +594,25 @@ namespace Smithy_Story
                 Console.Clear();
                 player.ShowActiveReqeusts();
                 
+                // 보유 의뢰가 없음
                 if (!player.ArchiveRequests.Any())
                 {
                     Console.WriteLine("현재 진행 중인 의뢰가 없습니다!");
                     Thread.Sleep(1000);
                     return GameScreen.InGame;
                 }
-                //for (int i = 0; i < player.ArchiveRequests.Count; i++)
-                //{
-                //    Request req = player.ArchiveRequests[i];
-                //    
-                //}
 
                 Console.WriteLine("1. 의뢰 포기");
                 Console.WriteLine("2. 의뢰 완료");
                 Console.Write("입력(뒤로 가기 0): ");
 
-                // 첫 번째 입력
+                // 입력 (의뢰 포기/완료 고르기)
                 var input1 = Console.ReadKey(true);
-                char keyChar1 = input1.KeyChar;
 
-                if (keyChar1 == '0')
+                if (input1.Key.Equals(ConsoleKey.D0) || input1.Key.Equals(ConsoleKey.NumPad0))
                     return GameScreen.InGame;
 
+                char keyChar1 = input1.KeyChar;
                 if (char.IsDigit(keyChar1))
                 {
                     int selected = int.Parse(keyChar1.ToString());
@@ -555,7 +622,7 @@ namespace Smithy_Story
                     {
                         Console.Write("\n몇 번째 의뢰를 포기하시겠습니까?: ");
 
-                        // 두 번째 입력
+                        // 입력 (포기할 의뢰 번호 정하기)
                         var input2 = Console.ReadKey(true);
                         char keyChar2 = input2.KeyChar;
 
@@ -567,7 +634,7 @@ namespace Smithy_Story
                             {
                                 Console.Write("\n정말로 포기하시겠습니까?(Y / N:Any): ");
 
-                                // 세 번째 입력
+                                // 입력 (해당 의뢰 포기가 맞는지 확인)
                                 var input3 = Console.ReadKey(true);
 
                                 // 의뢰 포기
@@ -577,20 +644,27 @@ namespace Smithy_Story
                                     string reqName = player.ArchiveRequests[discardNum - 1].Name;
                                     RequestType type = player.ArchiveRequests[discardNum - 1].Type;
 
-                                    // 물건을 맡기는 강화/수리 의뢰는 인벤토리에 있는 아이템도 제거시켜야 한다.
+                                    // 맡겨진 물건이 존재하는 강화/수리 의뢰는 해당 의뢰 제거와 함께 인벤토리에 있는 아이템도 제거시켜야 한다.
                                     if (type.Equals(RequestType.RepairWeapon) || type.Equals(RequestType.EnhanceWeapon))
                                         inventory.RemoveDepositedItemById(id);
 
                                     player.ArchiveRequests.RemoveAt(discardNum - 1);
-                                    Console.WriteLine($"\n'{reqName}' 의뢰를 포기하셨습니다!");
+                                    Console.WriteLine($"\n[{reqName}] 의뢰를 포기하셨습니다!");
                                     Thread.Sleep(2000);
                                 }
                             }
                             else
                             {
+                                Console.Clear();
                                 Console.WriteLine("\n잘못된 입력입니다. 다시 시도해주세요.");
-                                Thread.Sleep(800);
+                                Thread.Sleep(1000);
                             }
+                        }
+                        else
+                        {
+                            Console.Clear();
+                            Console.WriteLine("\n숫자를 입력해주세요.");
+                            Thread.Sleep(1000);
                         }
                     }
 
@@ -599,36 +673,37 @@ namespace Smithy_Story
                     {
                         Console.WriteLine("\n몇 번째 의뢰를 완료 처리 하시겠습니까?");
 
-                        // 네 번째 입력
+                        // 입력 (완료할 의뢰 번호)
                         var input4 = Console.ReadKey(true);
                         char keyChar4 = input4.KeyChar;
-
                         if (char.IsDigit(keyChar4))
                         {
                             int completeNum = int.Parse(keyChar4.ToString());
-
-                            
                             if (completeNum > 0 && completeNum <= player.ArchiveRequests.Count)
                             {
+
+                                // 완료 처리하기
                                 requestManager.CompleteRequest(player.ArchiveRequests[completeNum - 1], player, inventory);
                             }
                         }
                         else
                         {
+                            Console.Clear();
                             Console.WriteLine("\n잘못된 입력입니다. 다시 시도해주세요.");
-                            Thread.Sleep(800);
+                            Thread.Sleep(1000);
                         }
                     }
                     else
                     {
+                        Console.Clear();
                         Console.WriteLine("\n잘못된 입력입니다. 다시 시도해주세요.");
-                        Thread.Sleep(800);
+                        Thread.Sleep(1000);
                     }
                 }
                 else
                 {
                     Console.WriteLine("숫자를 입력해주세요.");
-                    Thread.Sleep(800);
+                    Thread.Sleep(1000);
                 }
             }
         }
@@ -636,26 +711,52 @@ namespace Smithy_Story
         // 무기 전체 리스트 보기 (제작에 필요한 재료 확인용)
         private GameScreen ShowWeaponManual()
         {
-            Console.Clear();
-            foreach (var weapon in WeaponData.GetAll())
+            while (true)
             {
-                Console.WriteLine($"[{weapon.Name}]");
-                foreach (var item in weapon.RequiredResources)
-                    Console.WriteLine($"- {item.Key.Name} : {item.Value}개");
-                Console.WriteLine();
+                Console.Clear();
+
+                // 모든 무기 데이터 정보 확인하기
+                foreach (var weapon in WeaponData.GetAll())
+                {
+                    Console.WriteLine($"[{weapon.Name}]");
+
+                    // 해당 무기에 필요한 재료들 출력
+                    foreach (var item in weapon.RequiredResources)
+                        Console.WriteLine($"- {item.Key.Name} : {item.Value}개");
+                    Console.WriteLine();
+                }
+                Console.Write("입력(뒤로가기 0): ");
+                var input = Console.ReadKey(true);
+                if (input.Key.Equals(ConsoleKey.D0) || input.Key.Equals(ConsoleKey.NumPad0))
+                    return GameScreen.InGame;
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("\n잘못된 입력입니다. 다시 시도해주세요.");
+                    Thread.Sleep(1000);
+                }
             }
-            Console.Write("입력(뒤로가기 0): ");
-            Console.ReadKey(true);
-            return GameScreen.InGame;
         }
 
-        // 설명
+        // 게임 설명
         private GameScreen ShowExplanation()
         {
-            Console.WriteLine("게임 설명...");
-            Console.Write("뒤로가기 0: ");
-            Console.ReadKey(true);
-            return GameScreen.MainMenu;
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("게임 설명...");
+                Console.Write("뒤로가기 0: ");
+
+                var input = Console.ReadKey(true);
+                if (input.Key.Equals(ConsoleKey.D0) || input.Key.Equals(ConsoleKey.NumPad0))
+                    return GameScreen.MainMenu;
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("\n잘못된 입력입니다. 다시 시도해주세요.");
+                    Thread.Sleep(1000);
+                }
+            }
         }
     }
 }

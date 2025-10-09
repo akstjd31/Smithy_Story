@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Smithy_Story
 {
+    // 
     public class Resource : IItem
     {
         // 상수
@@ -49,6 +50,7 @@ namespace Smithy_Story
         }
 
         object ICloneable.Clone() => Clone();
+
         // 출력문 재정의
         public override string ToString() => $"[{ID}] {Name}\t(개수: {Quantity}개, 개당 가격: {Price}, 등급: {Grade})\n";
     }

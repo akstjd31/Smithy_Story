@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Smithy_Story
 {
+    // 인벤토리 UI
     public class InventoryUI
     {
         // 변수
