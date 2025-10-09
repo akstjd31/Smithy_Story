@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
+using System.Threading;
 
 public class DataManager<T> where T : IData
 {
@@ -27,6 +28,7 @@ public class DataManager<T> where T : IData
     {
         if (nameToId.ContainsKey(name))
             return GetById(nameToId[name]);
+
 
         throw new ArgumentException($"{name}은(는) 존재하지 않습니다.");
     }

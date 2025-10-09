@@ -9,34 +9,37 @@ using System.Xml.Linq;
 
 namespace Smithy_Story
 {
-    // 의뢰 상태 enum 클래스 <= 이거 굳이 필요한가...??? 그냥 플레이어가 받은 의뢰만 리스트에 넣고 완료 or 실패하면 리스트에서 제거하면 될듯
-    public enum RequestStatus { Pending, Accepted, Completed, Failed }
-    
-
+    // 의뢰 클래스
     public class Request : IData, ICloneable
     {
         // 상수
         // 변수
         // 프로퍼티
-        public int ID {  get; set; }
+        public int ID {  get; private set; }
         public string Name { get; private set; }                            // 의뢰 제목(?)
         public IItem Item { get; private set; }
         public int NeededCount { get; private set; }                        // 필요로 하는 갯수
         public int Reward { get; set; }
         public int DeadlineDay { get; private set; }
-        public RequestStatus Status { get; set; } = RequestStatus.Pending;  // 의뢰 상태 (의뢰를 받았는지? 아님 거절했는지? 그런거)
         public RequestType Type { get; private set; }                       // 의뢰 종류 (제작, 재료 운반 등..)
 
+        public bool IsCompleted { get; set; } = false;                      // 의뢰의 완료 여부
         // 생성자
-        public Request(int id, string name, int deadlineDay, RequestType requestType, IItem item = null, int reward = 0, int neededCount = 1)
+        public Request(int id, string name, int deadlineDay, RequestType requestType, 
+            IItem item, int reward = 0, int neededCount = 1)
         {
             ID = id;
             Name = name;
             NeededCount = neededCount;
-            Item = item;
+            Item = (IItem)item.Clone();
             Reward = reward;
             DeadlineDay = deadlineDay;
             Type = requestType;
+        }
+
+        public Request()
+        {
+            
         }
 
         // 메소드
@@ -45,23 +48,23 @@ namespace Smithy_Story
         {
             Item = item;
         }
-        
+
+        // 만기 이전 완료 확인
+        public bool IsCompletedBeforeDeadline(int currentDay)
+        {
+            return IsCompleted && currentDay <= DeadlineDay;
+        }
+
         // 의뢰 실패 유무 확인
         public bool IsExpired(int day)
         {
             return day > DeadlineDay;
         }
-
         public object Clone()
         {
-            var clone = (Request)MemberwiseClone();
-
-            if (Item != null)
-                clone.Item = (IItem)Item.Clone(); // 깊은 복사
-
-            return clone;
+            return new Request(ID, Name, NeededCount, Type, (IItem)Item.Clone());
         }
 
-        public override string ToString() =>  $"{Name}\n(보상: {Reward} 골드, 주어진 시간: {DeadlineDay} 일, 상태: {Status})";
+        public override string ToString() =>  $"{Name}\n(보상: {Reward} 골드, 주어진 시간: {DeadlineDay} 일";
     }
 }

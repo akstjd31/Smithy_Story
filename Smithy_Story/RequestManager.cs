@@ -21,7 +21,7 @@ namespace Smithy_Story
     {
         // 상수
         private const int MaxRequestCount = 3;    // 하루 최대 수락 가능 수
-        private const int DailyRequestCount = 7; // 하루 표시되는 의뢰 개수
+        private const int DailyRequestCount = 7;  // 하루 표시되는 의뢰 개수
 
         // 변수
         private List<Request> dailyRequests = new List<Request>();
@@ -52,13 +52,13 @@ namespace Smithy_Story
                 var baseReq = allRequests[index];
 
                 var clone = (Request)baseReq.Clone();
+                
                 clone.Reward = CalculateReward(baseReq);  // 미리 계산해 둔 보상 적용
 
                 // 수리 의뢰면 내구도 조정
                 if (clone.Type == RequestType.RepairWeapon)
                 {
                     var durability = rand.Next(0, 100);
-                    Thread.Sleep(2000);
                     (clone.Item as Weapon).SetDurability(durability);
                 }
 
@@ -86,31 +86,83 @@ namespace Smithy_Story
             }
 
             var request = (Request)dailyRequests[index].Clone();          // 아래 코드가 실행되도록 아이템을 집어넣기
+
             player.AddRequest(request);
             dailyRequests.RemoveAt(index);
 
             RequestType type = request.Type;
             // 강화/수리 의뢰일 경우만 플레이어한테 맡기므로
             if (request.Item != null && (type.Equals(RequestType.EnhanceWeapon) || type.Equals(RequestType.RepairWeapon)))
+            {
+                (request.Item as Weapon).IsItemDeposited = true;    // 맡긴 물건 표시
                 inventory.AddItem(request.Item);
+            }
+
 
             return true;
         }
 
         // 의뢰 완료 처리
-        public void CompleteRequest(Request request, Player player)
+        public void CompleteRequest(Request request, Player player, Inventory inventory)
         {
-            if (player.ArchiveRequests.Remove(request))
+            if (!player.ArchiveRequests.Contains(request))
             {
-                Thread.Sleep(3000);
-                Console.Clear();
-                Console.WriteLine($"[의뢰 완료] {request.Name} — 보상: {request.Reward}");
+                Console.WriteLine("해당 아이템이 존재하지 않습니다!");
+                Thread.Sleep(1000);
+                return;
+            }
+
+            var items = inventory.GetItemById(request.Item.ID);  // 같은 ID를 가진 인벤토리 아이템
+
+            switch (request.Type)
+            {
+                case RequestType.DeliverItem:
+                    if (request.Item != null && inventory.HasEnoughItem(request.Item, request.NeededCount))
+                    {
+                        inventory.ConsumeItem(request.Item, request.NeededCount);
+                        request.IsCompleted = true;
+                    }
+                    break;
+
+                // 제작: 해당 아이템 존재 여부 판단
+                case RequestType.CraftWeapon:
+                    request.IsCompleted = items.Count > 0;
+                    break;
+                // 수리: 걍 해당 아이템 내구도 100 판단
+                case RequestType.RepairWeapon:
+                    foreach (var item in items)
+                    {
+                        // 무기 중에 내구도 100 찾으면 완료 처리
+                        if (item is Weapon)
+                            request.IsCompleted = (item as Weapon)?.Durability == Weapon.MaxDurability;
+                    }
+
+                    break;
+                case RequestType.EnhanceWeapon:
+                    // 인벤토리에 존재하는 같은 아이템 중
+                    foreach (var item in items)
+                    {
+                        // 무기 중에 같은 강화 수치 무기 존재 == 완료
+                        if (item is Weapon)
+                            request.IsCompleted = (item as Weapon)?.EnhanceLevel == (request.Item as Weapon)?.EnhanceLevel;
+                    }
+
+                    break;
+            }
+
+            if (request.IsCompleted)
+            {
+                player.ArchiveRequests.Remove(request);
+                Console.WriteLine($"[{request.Name}] 의뢰 완료!");
+                Thread.Sleep(1000);
             }
             else
             {
-                Console.WriteLine("해당 의뢰는 플레이어의 목록에 없습니다.");
+                Console.WriteLine("해당 의뢰는 완료할 수 없습니다!");
+                Thread.Sleep(1000);
             }
         }
+
 
         // 만료된 의뢰 제거
         public void CheckExpiredRequests(List<Request> requests, GameTime gameTime)

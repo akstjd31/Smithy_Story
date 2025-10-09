@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Smithy_Story
@@ -13,6 +15,19 @@ namespace Smithy_Story
         private List<IItem> items = new List<IItem>();
 
         // 메소드
+
+        // 의뢰자한테 맡겨진 물건을 지우기 (사실 이 코드가 유효하지 않을 때가 있음.. 확률은 매우 낮지만)
+        public void RemoveDepositedItemById(int id)
+        {
+            for (int i = 0; i < items.Count; i++)
+            { 
+                if (items[i].ID == id && items[i] is Weapon && (items[i] as Weapon).IsItemDeposited)
+                {
+                    items.RemoveAt(i);
+                    break;
+                }
+            }   
+        }
 
         // 인벤토리에 있는 무기 반환
         public List<Weapon> GetWeapon() => items.OfType<Weapon>().ToList();
@@ -128,16 +143,27 @@ namespace Smithy_Story
         }
 
         // 아이템 검색 (ID 기반) => 재료면 상관없지만, 중복되는 무기가 존재할 가능성이 있어서 리스트 형태 반환
-        public List<IItem> GetItemById(int id)
-        {
-            return items.Where(i => i.ID == id).ToList();
-        }
+        public List<IItem> GetItemById(int id) => items.Where(i => i.ID == id).ToList();
 
         // 아이템 검색 (문자열 기반) => 위와 똑같음.
 
-        public List<IItem> GetItemsByName(string name)
+        public List<IItem> GetItemsByName(string name) => items.Where(i => i.Name.Contains(name)).ToList();
+
+        // 아이템 수량이 충분한지?
+        public bool HasEnoughItem(IItem item, int neededCount)
         {
-            return items.Where(i => i.Name.Contains(name)).ToList();
+            var exist = items.FirstOrDefault(i => i.ID == item.ID && i.IsStackable);
+            return exist != null && exist.Quantity >= neededCount;
+        }
+
+        // 아이템 차감
+        public bool ConsumeItem(IItem item, int neededCount)
+        {
+            if (!HasEnoughItem(item, neededCount))
+                return false;
+
+            RemoveItemById(item.ID, neededCount);
+            return true;
         }
 
         public void ShowInventory()

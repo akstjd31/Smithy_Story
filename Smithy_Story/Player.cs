@@ -70,16 +70,11 @@ namespace Smithy_Story
         public void ShowActiveReqeusts()
         {
             Console.Clear();
-            if (!ArchiveRequests.Any())
-            {
-                Console.WriteLine("현재 진행 중인 의뢰가 없습니다.");
-                return;
-            }
-
             Console.WriteLine(this.name + "의 의뢰 목록");
             Console.WriteLine("=================================================");
-            foreach (var request in ArchiveRequests)
-                Console.WriteLine("- " + request.Name);
+            for (int i = 0; i < ArchiveRequests.Count; i++)
+                Console.WriteLine($"{i + 1}. {ArchiveRequests[i].Name}");
+
             Console.WriteLine();
         }
 

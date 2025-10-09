@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Smithy_Story
 {
     
-    public class Weapon : IItem, ICloneable
+    public class Weapon : IItem
     {
         // 상수
         const int MaxEnhanceLevel = 15;
@@ -18,6 +18,7 @@ namespace Smithy_Story
         private int craftMinutes;   // 제작 시간
 
         // 프로퍼티
+
         public int Durability { get; private set; }
 
         public Dictionary<Resource, int> RequiredResources { get; private set; }
@@ -50,12 +51,14 @@ namespace Smithy_Story
         // 무기는 스택 불가 (개수 항상 1)
         public bool IsStackable => false;
         public Grade Grade { get; private set; }
+        public bool IsItemDeposited { get; set; } = false;   // 의뢰자한테 맡겨진 물건인가?
 
         // 생성자
+        public Weapon(){ }
         // 무기는 무조건 개수 1 고정!!!!!!!!
         public Weapon(int id, string name, int price, Grade grade, int craftMinutes,
             Dictionary<Resource, int> requiredResources,
-            int quantity = 1, int enhanceLevel = 0, int durability = 50)
+            int quantity = 1, int enhanceLevel = 0, int durability = 50, bool isDeposited = false)
         {
             ID = id;
             Name = name;
@@ -66,6 +69,7 @@ namespace Smithy_Story
             this.enhanceLevel = enhanceLevel;
             Durability = durability;
             RequiredResources = requiredResources;
+            IsItemDeposited = isDeposited;
         }
 
         // 메소드
@@ -75,7 +79,7 @@ namespace Smithy_Story
         // 수리
         public void Repair() => Durability = MaxDurability;
 
-        //
+        // 내구도 설정
         public void SetDurability(int durability) => Durability = durability;
 
 
@@ -90,11 +94,32 @@ namespace Smithy_Story
             return value;
         }
 
-        public object Clone()
+        public IItem Clone()
         {
-            var clone = (Weapon)MemberwiseClone();
-            return clone;
+            // RequiredResources 딥 카피
+            var newResources = new Dictionary<Resource, int>();
+            foreach (var kvp in RequiredResources)
+            {
+                // Resource도 Clone()이 구현되어 있어야 함
+                newResources.Add((Resource)kvp.Key.Clone(), kvp.Value);
+            }
+
+            // 새로운 Weapon 객체 생성
+            return new Weapon(
+                id: this.ID,
+                name: this.Name,
+                price: this.Price,
+                grade: this.Grade,
+                craftMinutes: this.CraftMinutes,
+                requiredResources: newResources,
+                quantity: this.Quantity,
+                enhanceLevel: this.EnhanceLevel,
+                durability: this.Durability,
+                isDeposited: this.IsItemDeposited
+            );
         }
+
+        object ICloneable.Clone() => Clone();
 
         // 출력문 재정의
         public override string ToString() => $"[{ID}] {EnhanceLevel}강 {Name}\t(등급: {Grade}, 가격: {Price})\t내구도 [{Durability}/{MaxDurability}]\n";

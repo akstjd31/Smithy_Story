@@ -65,7 +65,7 @@ namespace Smithy_Story
 
             inventory.AddItem(weapon);
             Console.WriteLine($"{weapon.Name} 제작 완료!");
-            Thread.Sleep(2000);
+            Thread.Sleep(1000);
 
             return true;
         }
