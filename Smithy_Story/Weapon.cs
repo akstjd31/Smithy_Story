@@ -94,13 +94,12 @@ namespace Smithy_Story
         }
 
         // 복사
-        public IItem Clone()
+        public IData Clone()
         {
-            // RequiredResources 딥 카피
+            // RequiredResources 
             var newResources = new Dictionary<Resource, int>();
             foreach (var kvp in RequiredResources)
             {
-                // Resource도 Clone()이 구현되어 있어야 함
                 newResources.Add((Resource)kvp.Key.Clone(), kvp.Value);
             }
 

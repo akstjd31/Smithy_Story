@@ -56,7 +56,7 @@ namespace Smithy_Story
 
                 // 해당 무기에 필요한 재료가 인벤토리에 있으면
                 var haveItem = items.FirstOrDefault(i =>
-                    i != null && i.Name.Equals(requiredResource.Name, StringComparison.OrdinalIgnoreCase));
+                    i != null && i.Name.Equals(requiredResource.Name));
 
                 // 필요한 재료가 없거나 수량이 부족한 경우
                 if (haveItem == null || haveItem.Quantity < requiredAmount)

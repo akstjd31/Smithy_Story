@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading;
 
 namespace Smithy_Story
-{// 화면 FSM
+{
+    
+    // 화면 FSM
     public enum GameScreen
     {
         MainMenu,           // 메인 화면
